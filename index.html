@@ -65,10 +65,32 @@ td{padding:7px 6px;border-bottom:1px solid var(--bordure);}
 .resume-ligne{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--bordure);font-size:14px;}
 .resume-ligne:last-child{border-bottom:none;}
 .resume-ligne .v{font-weight:600;}
+.btn-action{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--bordure);border-radius:10px;padding:11px 12px;font-size:14px;font-weight:600;color:var(--texte);text-align:left;}
+.btn-action.danger{color:var(--rouge);border-color:#F0D4D4;}
+.btn-action .ic-a{font-size:17px;}
+.hs-ligne{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--bordure);font-size:13px;}
+.hs-ligne:last-child{border-bottom:none;}
+.impression-seule{display:none;}
+@media print{
+  header, nav, main{display:none !important;}
+  .impression-seule{display:block !important;}
+  .impression-seule h1{font-size:18px;margin:0 0 4px;}
+  .impression-seule h2{font-size:14px;margin:18px 0 6px;}
+  .impression-seule table{width:100%;border-collapse:collapse;font-size:10px;}
+  .impression-seule th,.impression-seule td{border:1px solid #ccc;padding:3px 5px;text-align:left;}
+}
 .vide{color:var(--texte-att);font-size:13px;padding:20px 0;text-align:center;}
 .note{font-size:12px;color:var(--texte-att);margin-top:6px;}
 .top-actions{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
 .icon-btn{background:none;border:1px solid var(--bordure);border-radius:8px;padding:6px 10px;font-size:13px;color:var(--texte-att);}
+.mat-card{background:var(--carte);border:1px solid var(--bordure);border-radius:12px;padding:12px;margin-bottom:10px;}
+.mat-card .l1{display:flex;gap:8px;align-items:center;margin-bottom:8px;}
+.mat-card .l1 input{flex:1;font-weight:600;}
+.mat-card .l1 .x-btn{flex:0 0 auto;width:36px;}
+.mat-card .l2{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
+.mat-card .champ label{font-size:10px;margin:0 0 3px;}
+.mat-card .champ select,.mat-card .champ input{font-size:13px;padding:7px 8px;}
+.mat-card .champ.hs input{color:var(--rouge);}
 .actions-bar{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
 .actions-bar .icon-btn{flex:1;min-width:100px;font-size:12px;padding:8px 6px;}
 .icon-btn.danger-txt{color:var(--rouge);border-color:var(--rouge-bg);}
@@ -99,8 +121,17 @@ td{padding:7px 6px;border-bottom:1px solid var(--bordure);}
       <button class="accueil-btn" onclick="allerA('registre')"><span class="ic">📋</span>Consulter le<br>registre</button>
       <button class="accueil-btn" onclick="allerA('dashboard')"><span class="ic">📊</span>Tableau de bord</button>
     </div>
-    <div class="section-titre">En un coup d'œil</div>
-    <div class="carte" id="accueil-resume"></div>
+
+    <div class="section-titre">Matériel HS</div>
+    <div class="carte" id="accueil-hs"></div>
+
+    <div class="section-titre">Actions</div>
+    <div class="carte" style="display:flex;flex-direction:column;gap:8px;">
+      <button class="btn-action danger" onclick="reinitialiserRegistre()"><span class="ic-a">🔄</span>Fin de stage — vider le registre</button>
+      <button class="btn-action danger" onclick="reinitialiser()"><span class="ic-a">🗑️</span>Réinitialisation totale</button>
+      <button class="btn-action" onclick="exporterPDF()"><span class="ic-a">📄</span>Exporter en PDF</button>
+      <button class="btn-action" onclick="exporterExcel()"><span class="ic-a">📊</span>Exporter en Excel (.xlsx)</button>
+    </div>
   </section>
 
   <!-- ================= SAISIE RAPIDE ================= -->
@@ -145,14 +176,8 @@ td{padding:7px 6px;border-bottom:1px solid var(--bordure);}
       <h2 style="margin:0;">Matériel — stock</h2>
       <button class="icon-btn" onclick="ajouterLigneMateriel()">+ Ajouter</button>
     </div>
-    <div class="carte">
-      <div class="tbl-wrap">
-        <table id="tbl-materiel">
-          <thead><tr><th>Catégorie</th><th>Matériel</th><th>Quantité</th><th>HS</th><th></th></tr></thead>
-          <tbody></tbody>
-        </table>
-      </div>
-    </div>
+    <input type="text" id="m-recherche" placeholder="Rechercher un matériel..." style="margin-bottom:10px;">
+    <div id="mat-liste"></div>
   </section>
 
   <!-- ================= REGISTRE ================= -->
@@ -205,12 +230,6 @@ td{padding:7px 6px;border-bottom:1px solid var(--bordure);}
       </div>
     </div>
 
-    <div class="actions-bar">
-      <button class="icon-btn" onclick="exporterJSON()">Exporter (.json)</button>
-      <button class="icon-btn danger-txt" onclick="reinitialiserRegistre()">Fin de stage</button>
-      <button class="icon-btn danger-txt" onclick="reinitialiser()">Réinit. tout</button>
-    </div>
-
     <div class="section-titre">Disponibilités en un coup d'œil</div>
     <div class="carte">
       <div class="dispo-grid" id="dispo-grid"></div>
@@ -256,6 +275,8 @@ td{padding:7px 6px;border-bottom:1px solid var(--bordure);}
   <button data-page="registre" onclick="allerA('registre')"><span class="ic">📋</span>Registre</button>
   <button data-page="dashboard" onclick="allerA('dashboard')"><span class="ic">📊</span>Tableau de bord</button>
 </nav>
+
+<div id="zone-impression" class="impression-seule"></div>
 
 <script>
 /* ====================== DONNEES ====================== */
@@ -351,17 +372,15 @@ function allerA(page){
   if(page==='dashboard') rafraichirDashboard();
 }
 function rafraichirAccueil(){
-  const enCours = enCoursParMateriel();
-  const totalEnCours = Object.values(enCours).reduce((a,b)=>a+b,0);
-  const encoursListe = listeSortiesEnCours();
-  const auj = new Date();
-  const alertes = encoursListe.filter(r=> Math.floor((auj-new Date(r.date))/86400000) > 7).length;
-  document.getElementById('accueil-resume').innerHTML = `
-    <div class="resume-ligne"><span>Mouvements enregistrés</span><span class="v">${mouvements.length}</span></div>
-    <div class="resume-ligne"><span>Lignes actuellement sorties</span><span class="v">${encoursListe.length}</span></div>
-    <div class="resume-ligne"><span>Quantité totale en perception</span><span class="v">${totalEnCours}</span></div>
-    <div class="resume-ligne"><span>Alertes (non restitué &gt; 7j)</span><span class="v" style="color:${alertes>0?'var(--rouge)':'inherit'}">${alertes}</span></div>
-  `;
+  const hsLignes = materiels.filter(m => Number(m.hs||0) > 0);
+  const bloc = document.getElementById('accueil-hs');
+  if(hsLignes.length===0){
+    bloc.innerHTML = '<p class="vide" style="padding:4px 0;">Aucun matériel HS</p>';
+  }else{
+    bloc.innerHTML = hsLignes.map(m=>`
+      <div class="hs-ligne"><span>${m.materiel}</span><span style="color:var(--rouge);font-weight:600;">${m.hs}</span></div>
+    `).join('');
+  }
 }
 
 /* ====================== SAISIE RAPIDE ====================== */
@@ -455,21 +474,49 @@ function enregistrerMouvement(){
 /* ====================== MATERIEL ====================== */
 function rafraichirMateriel(){
   const cats = ['matériels RGPL','Matériels 72-49-85','matériels CRI'];
-  const tbody = document.querySelector('#tbl-materiel tbody');
-  tbody.innerHTML = materiels.map((m,i)=>`
-    <tr>
-      <td><select onchange="materiels[${i}].categorie=this.value;sauverTout();">
-        ${cats.map(c=>`<option value="${c}" ${c===m.categorie?'selected':''}>${c}</option>`).join('')}
-      </select></td>
-      <td><input type="text" value="${m.materiel}" onchange="materiels[${i}].materiel=this.value;sauverTout();"></td>
-      <td><input type="number" value="${m.quantite}" style="width:70px" onchange="materiels[${i}].quantite=Number(this.value);sauverTout();rafraichirMateriel();"></td>
-      <td><input type="number" value="${m.hs||0}" style="width:60px;color:var(--rouge);" onchange="materiels[${i}].hs=Number(this.value);sauverTout();rafraichirMateriel();"></td>
-      <td><button class="x-btn" onclick="supprimerMateriel(${i})">✕</button></td>
-    </tr>`).join('');
+  const liste = document.getElementById('mat-liste');
+  const q = (document.getElementById('m-recherche').value||'').toLowerCase();
+  liste.innerHTML = materiels.map((m,i)=>({m,i})).filter(({m})=>{
+    if(!q) return true;
+    return m.materiel.toLowerCase().includes(q) || m.categorie.toLowerCase().includes(q);
+  }).map(({m,i})=>`
+    <div class="mat-card" data-idx="${i}">
+      <div class="l1">
+        <input type="text" value="${m.materiel}" onchange="materiels[${i}].materiel=this.value;sauverTout();">
+        <button class="x-btn" onclick="supprimerMateriel(${i})">✕</button>
+      </div>
+      <div class="l2">
+        <div class="champ">
+          <label>Catégorie</label>
+          <select onchange="materiels[${i}].categorie=this.value;sauverTout();">
+            ${cats.map(c=>`<option value="${c}" ${c===m.categorie?'selected':''}>${c}</option>`).join('')}
+          </select>
+        </div>
+        <div class="champ">
+          <label>Quantité</label>
+          <input type="number" value="${m.quantite}" onchange="materiels[${i}].quantite=Number(this.value);sauverTout();">
+        </div>
+        <div class="champ hs">
+          <label>HS</label>
+          <input type="number" value="${m.hs||0}" onchange="materiels[${i}].hs=Number(this.value);sauverTout();">
+        </div>
+      </div>
+    </div>`).join('') || '<p class="vide">Aucun matériel ne correspond à la recherche.</p>';
 }
 function ajouterLigneMateriel(){
   materiels.push({categorie:'matériels RGPL', materiel:'Nouveau matériel', quantite:0, hs:0});
-  sauverTout(); rafraichirMateriel();
+  sauverTout();
+  document.getElementById('m-recherche').value='';
+  rafraichirMateriel();
+  const cartes = document.querySelectorAll('.mat-card');
+  const derniere = cartes[cartes.length-1];
+  if(derniere){
+    derniere.scrollIntoView({behavior:'smooth', block:'center'});
+    derniere.style.outline = '2px solid var(--vert)';
+    const champNom = derniere.querySelector('.l1 input');
+    champNom.focus();
+    champNom.select();
+  }
 }
 function supprimerMateriel(i){
   if(confirm('Supprimer cette ligne ?')){ materiels.splice(i,1); sauverTout(); rafraichirMateriel(); }
@@ -599,6 +646,65 @@ function exporterJSON(){
   a.download = 'armurerie-export-'+new Date().toISOString().slice(0,10)+'.json';
   a.click();
 }
+
+/* ----- Export PDF : génère une vue imprimable, puis ouvre la boîte de dialogue
+   d'impression du navigateur (choisir "Enregistrer au format PDF" comme
+   imprimante). Aucune bibliothèque externe nécessaire, fonctionne hors-ligne. */
+function exporterPDF(){
+  const enCours = enCoursParMateriel();
+  const noms = nomsMateriels();
+  const lignesStock = noms.map(n=>{
+    const s = enCours[n]||0;
+    const d = stockTotal(n)-s-hsTotal(n);
+    return `<tr><td>${n}</td><td>${stockTotal(n)}</td><td>${s}</td><td>${d}</td></tr>`;
+  }).join('');
+  const lignesRegistre = toutesLesLignes().map(l=>`
+    <tr><td>${l.date}</td><td>${l.unite}</td><td>${l.type}</td><td>${l.grade}</td><td>${l.nom}</td><td>${l.materiel}</td><td>${l.quantite}</td><td>${l.rendu||0}</td><td>${l.type==='Sortie'?l.solde:''}</td></tr>
+  `).join('');
+  const zone = document.getElementById('zone-impression');
+  zone.innerHTML = `
+    <h1>Armurerie — Registre unique</h1>
+    <p>Édité le ${new Date().toLocaleDateString('fr-FR')}</p>
+    <h2>Stock matériel</h2>
+    <table><thead><tr><th>Matériel</th><th>Stock total</th><th>En perception</th><th>Disponible</th></tr></thead><tbody>${lignesStock}</tbody></table>
+    <h2>Registre des mouvements</h2>
+    <table><thead><tr><th>Date</th><th>Unité</th><th>Type</th><th>Grade</th><th>Nom</th><th>Matériel</th><th>Qté</th><th>Rendu</th><th>Solde</th></tr></thead><tbody>${lignesRegistre}</tbody></table>
+  `;
+  window.print();
+}
+
+/* ----- Export Excel : charge SheetJS depuis un CDN à la demande (nécessite
+   une connexion internet la première fois), puis génère un vrai .xlsx à
+   deux feuilles (Matériel, Registre). */
+function exporterExcel(){
+  if(typeof XLSX !== 'undefined'){ genererXLSX(); return; }
+  const s = document.createElement('script');
+  s.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+  s.onload = genererXLSX;
+  s.onerror = () => alert('Connexion internet requise pour générer le fichier Excel (bibliothèque non chargée).');
+  document.head.appendChild(s);
+}
+function genererXLSX(){
+  const enCours = enCoursParMateriel();
+  const noms = nomsMateriels();
+  const feuilleStock = [['Matériel','Stock total','En perception','Disponible HS','Disponible']];
+  noms.forEach(n=>{
+    const s = enCours[n]||0;
+    const hs = hsTotal(n);
+    feuilleStock.push([n, stockTotal(n), s, hs, stockTotal(n)-s-hs]);
+  });
+
+  const feuilleRegistre = [['Date','Unité','Type','Grade','Nom','Matériel','Quantité','Réf. Sortie','Rendu','Solde','Statut']];
+  toutesLesLignes().forEach(l=>{
+    feuilleRegistre.push([l.date,l.unite,l.type,l.grade,l.nom,l.materiel,l.quantite,l.refSortie||'',l.rendu||0,l.type==='Sortie'?l.solde:'',l.statut]);
+  });
+
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(feuilleStock), 'Matériel');
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(feuilleRegistre), 'Registre');
+  XLSX.writeFile(wb, 'armurerie-'+new Date().toISOString().slice(0,10)+'.xlsx');
+}
+
 function reinitialiserRegistre(){
   if(confirm('Fin de stage : effacer toutes les perceptions/retours du registre ? La liste des matériels et leurs quantités sont conservées.')){
     mouvements = [];
@@ -626,6 +732,7 @@ rafraichirAccueil();
 document.getElementById('r-filtre-unite').addEventListener('change', rafraichirRegistre);
 document.getElementById('r-filtre-type').addEventListener('change', rafraichirRegistre);
 document.getElementById('r-filtre-nom').addEventListener('input', rafraichirRegistre);
+document.getElementById('m-recherche').addEventListener('input', rafraichirMateriel);
 
 if('serviceWorker' in navigator){
   window.addEventListener('load', ()=>{
