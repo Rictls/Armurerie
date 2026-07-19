@@ -122,6 +122,10 @@ td{padding:7px 6px;border-bottom:1px solid var(--bordure);}
       <button class="accueil-btn" onclick="allerA('dashboard')"><span class="ic">📊</span>Tableau de bord</button>
     </div>
 
+    <div class="section-titre">Recherche</div>
+    <input type="text" id="a-recherche" placeholder="Nom, matériel ou HS...">
+    <div class="carte" id="accueil-recherche-resultats" style="display:none;"></div>
+
     <div class="section-titre">Matériel HS</div>
     <div class="carte" id="accueil-hs"></div>
 
@@ -394,6 +398,39 @@ function rafraichirAccueil(){
       <div class="hs-ligne"><span>${m.materiel}</span><span style="color:var(--rouge);font-weight:600;">${m.hs}</span></div>
     `).join('');
   }
+  rechercheAccueil();
+}
+function rechercheAccueil(){
+  const q = (document.getElementById('a-recherche').value||'').trim().toLowerCase();
+  const zone = document.getElementById('accueil-recherche-resultats');
+  if(!q){ zone.style.display='none'; zone.innerHTML=''; return; }
+
+  let html = '';
+
+  if('hs'.includes(q) || 'hors service'.includes(q)){
+    const hsMatch = materiels.filter(m => Number(m.hs||0) > 0);
+    if(hsMatch.length){
+      html += `<p style="font-size:12px;font-weight:600;color:var(--texte-att);margin:0 0 6px;">Matériel HS</p>`;
+      html += hsMatch.map(m=>`<div class="hs-ligne"><span>${m.materiel}</span><span style="color:var(--rouge);font-weight:600;">${m.hs}</span></div>`).join('');
+    }
+  }
+
+  const encours = listeSortiesEnCours().filter(r =>
+    r.nom.toLowerCase().includes(q) || r.materiel.toLowerCase().includes(q)
+  );
+  if(encours.length){
+    html += `<p style="font-size:12px;font-weight:600;color:var(--texte-att);margin:14px 0 6px;">Sorties en cours</p>`;
+    html += encours.map(r=>`<div class="hs-ligne"><span>${r.nom} — ${r.materiel} (${r.unite})</span><span style="font-weight:600;">${r.quantite}</span></div>`).join('');
+  }
+
+  const matMatch = materiels.filter(m => m.materiel.toLowerCase().includes(q));
+  if(matMatch.length){
+    html += `<p style="font-size:12px;font-weight:600;color:var(--texte-att);margin:14px 0 6px;">Stock</p>`;
+    html += matMatch.map(m=>`<div class="hs-ligne"><span>${m.materiel} <span style="color:var(--texte-att);">(${m.categorie})</span></span><span style="font-weight:600;">${m.quantite}${m.hs>0?` <span style="color:var(--rouge);">− ${m.hs} HS</span>`:''}</span></div>`).join('');
+  }
+
+  zone.style.display = 'block';
+  zone.innerHTML = html || '<p class="vide" style="padding:4px 0;">Aucun résultat</p>';
 }
 
 /* ====================== SAISIE RAPIDE ====================== */
@@ -440,8 +477,9 @@ function ajouterLigneSaisie(materielVal, qteVal){
   const div = document.createElement('div');
   div.className='ligne-mat';
   const noms = nomsMateriels();
+  const optionVide = `<option value="" ${materielVal?'':'selected'}>— Choisir —</option>`;
   div.innerHTML = `
-    <div><label>Matériel</label><select class="s-mat">${noms.map(n=>`<option value="${n}" ${n===materielVal?'selected':''}>${n}</option>`).join('')}</select></div>
+    <div><label>Matériel</label><select class="s-mat">${optionVide}${noms.map(n=>`<option value="${n}" ${n===materielVal?'selected':''}>${n}</option>`).join('')}</select></div>
     <div><label>Qté</label><input type="number" class="s-qte" min="0" value="${qteVal||''}"></div>
     <button class="x-btn" onclick="this.parentElement.remove()">✕</button>
   `;
@@ -495,7 +533,7 @@ function rafraichirMateriel(){
   }).map(({m,i})=>`
     <div class="mat-card" data-idx="${i}">
       <div class="l1">
-        <input type="text" value="${m.materiel}" onchange="materiels[${i}].materiel=this.value;sauverTout();">
+        <input type="text" value="${m.materiel}" onchange="modifierNomMateriel(${i},this)" onblur="modifierNomMateriel(${i},this)">
         <button class="x-btn" onclick="supprimerMateriel(${i})">✕</button>
       </div>
       <div class="l2">
@@ -515,6 +553,16 @@ function rafraichirMateriel(){
         </div>
       </div>
     </div>`).join('') || '<p class="vide">Aucun matériel ne correspond à la recherche.</p>';
+}
+function modifierNomMateriel(i, input){
+  const val = input.value.trim();
+  if(val===''){
+    alert('Le nom du matériel ne peut pas être vide.');
+    input.value = materiels[i].materiel;
+    return;
+  }
+  materiels[i].materiel = val;
+  sauverTout();
 }
 function ajouterLigneMateriel(){
   materiels.push({categorie:'matériels RGPL', materiel:'Nouveau matériel', quantite:0, hs:0});
@@ -779,6 +827,7 @@ document.getElementById('r-filtre-unite').addEventListener('change', rafraichirR
 document.getElementById('r-filtre-type').addEventListener('change', rafraichirRegistre);
 document.getElementById('r-filtre-nom').addEventListener('input', rafraichirRegistre);
 document.getElementById('m-recherche').addEventListener('input', rafraichirMateriel);
+document.getElementById('a-recherche').addEventListener('input', rechercheAccueil);
 
 if('serviceWorker' in navigator){
   window.addEventListener('load', ()=>{
