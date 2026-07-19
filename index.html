@@ -142,6 +142,7 @@ td{padding:7px 6px;border-bottom:1px solid var(--bordure);}
       <button class="btn-action danger" onclick="reinitialiserRegistre()"><span class="ic-a">🔄</span>Fin de stage — vider le registre</button>
       <button class="btn-action danger" onclick="reinitialiser()"><span class="ic-a">🗑️</span>Réinitialisation totale</button>
       <button class="btn-action" onclick="exporterPDF()"><span class="ic-a">📄</span>Exporter en PDF</button>
+      <button class="btn-action" onclick="exporterInventaireJour()"><span class="ic-a">📅</span>Inventaire d'une journée (PDF)</button>
       <button class="btn-action" onclick="exporterExcel()"><span class="ic-a">📊</span>Exporter en Excel (.xlsx)</button>
       <button class="btn-action" onclick="exporterJSON()"><span class="ic-a">💾</span>Sauvegarde (.json)</button>
       <button class="btn-action" onclick="verifierErreurs()"><span class="ic-a">🔎</span>Vérifier les erreurs</button>
@@ -193,7 +194,10 @@ td{padding:7px 6px;border-bottom:1px solid var(--bordure);}
       <div id="s-lignes"></div>
       <button class="btn secondaire petit" onclick="ajouterLigneSaisie()">+ Ajouter une ligne</button>
 
-      <button class="btn" onclick="enregistrerMouvement()">Enregistrer</button>
+      <div style="display:flex;gap:8px;">
+        <button class="btn" style="flex:1;" onclick="enregistrerMouvement()">Enregistrer</button>
+        <button class="btn secondaire" style="flex:0 0 auto;" onclick="annulerSaisie()">Annuler</button>
+      </div>
     </div>
   </section>
 
@@ -484,7 +488,9 @@ function rechercheAccueil(){
     const nomsUniques = Array.from(new Set(encours.map(r=>r.nom)));
     html += `<p style="font-size:12px;font-weight:600;color:var(--texte-att);margin:14px 0 6px;">Sorties en cours</p>`;
     if(nomsUniques.length===1){
-      html += `<button class="btn-action" style="margin-bottom:8px;" onclick="toutRendre('${nomsUniques[0].replace(/'/g,"\\'")}')"><span class="ic-a">🔄</span>Tout rendre pour ${nomsUniques[0]}</button>`;
+      const nomEchap = nomsUniques[0].replace(/'/g,"\\'");
+      html += `<button class="btn-action" style="margin-bottom:8px;" onclick="toutRendre('${nomEchap}')"><span class="ic-a">🔄</span>Tout rendre pour ${nomsUniques[0]}</button>`;
+      html += `<button class="btn-action" style="margin-bottom:8px;" onclick="exporterFicheIndividuelle('${nomEchap}')"><span class="ic-a">📄</span>Fiche PDF de ${nomsUniques[0]}</button>`;
     }
     html += encours.map(r=>`<div class="hs-ligne resultat-clic" onclick="allerVersRegistreEdit('${r.mouvementId}',${r.ligneIndex})"><span>${r.nom} — ${r.materiel} (${r.unite})</span><span style="font-weight:600;">${r.quantite} ›</span></div>`).join('');
   }
@@ -552,7 +558,6 @@ function initSaisie(){
   remplirDatalistNoms();
   remplirDatalistGrades();
   remplirSelectKits();
-  document.getElementById('s-unite').addEventListener('change', basculerAffichageSerie);
   document.getElementById('s-type').addEventListener('change', e=>{
     document.getElementById('s-ref-wrap').style.display = e.target.value==='Retour' ? 'block' : 'none';
     if(e.target.value==='Retour') remplirRefSortie();
@@ -565,7 +570,6 @@ function initSaisie(){
     const mv = mouvements.find(m=>m.id===id);
     if(mv){
       document.getElementById('s-unite').value = mv.unite;
-      basculerAffichageSerie();
       const soldes = calculerSoldes();
       document.getElementById('s-lignes').innerHTML='';
       mv.lignes.forEach(l=>{
@@ -642,31 +646,34 @@ function remplirRefSortie(){
   sel.innerHTML = '<option value="">— choisir —</option>' + options.map(m=>
     `<option value="${m.id}">${m.nom} — ${m.date} (${m.id})</option>`).join('');
 }
+const MATERIELS_A_NUMERO_SERIE = ['PA MASG1 - arme de service'];
+function necessiteSerie(materiel){
+  return MATERIELS_A_NUMERO_SERIE.includes(materiel);
+}
 function ajouterLigneSaisie(materielVal, qteVal, serieVal){
   const wrap = document.getElementById('s-lignes');
   const div = document.createElement('div');
   div.className='ligne-mat-wrap';
   const noms = nomsMateriels();
   const optionVide = `<option value="" ${materielVal?'':'selected'}>— Choisir —</option>`;
-  const afficherSerie = document.getElementById('s-unite').value === 'Armes de service';
+  const afficherSerie = necessiteSerie(materielVal);
   div.innerHTML = `
     <div class="ligne-mat">
-      <div><label>Matériel</label><select class="s-mat">${optionVide}${noms.map(n=>`<option value="${n}" ${n===materielVal?'selected':''}>${n}</option>`).join('')}</select></div>
+      <div><label>Matériel</label><select class="s-mat" onchange="basculerSerieLigne(this)">${optionVide}${noms.map(n=>`<option value="${n}" ${n===materielVal?'selected':''}>${n}</option>`).join('')}</select></div>
       <div><label>Qté</label><input type="number" class="s-qte" min="0" value="${qteVal!==undefined?qteVal:1}"></div>
       <button class="x-btn" onclick="this.closest('.ligne-mat-wrap').remove()">✕</button>
     </div>
     <div class="ligne-serie" style="display:${afficherSerie?'block':'none'};">
-      <label>N° de série (arme de service)</label>
+      <label>N° de série (arme suivie individuellement)</label>
       <input type="text" class="s-serie" placeholder="ex: SN-001" value="${serieVal||''}">
     </div>
   `;
   wrap.appendChild(div);
 }
-function basculerAffichageSerie(){
-  const afficher = document.getElementById('s-unite').value === 'Armes de service';
-  document.querySelectorAll('#s-lignes .ligne-serie').forEach(el=>{
-    el.style.display = afficher ? 'block' : 'none';
-  });
+function basculerSerieLigne(selectMat){
+  const wrapDiv = selectMat.closest('.ligne-mat-wrap');
+  const zoneSerie = wrapDiv.querySelector('.ligne-serie');
+  zoneSerie.style.display = necessiteSerie(selectMat.value) ? 'block' : 'none';
 }
 function enregistrerMouvement(){
   const date = document.getElementById('s-date').value;
@@ -689,7 +696,7 @@ function enregistrerMouvement(){
     const qte = Number(wrapDiv.querySelector('.s-qte').value);
     if(mat && qte>0){
       const ligne = {materiel:mat, quantite:qte};
-      if(unite==='Armes de service'){
+      if(necessiteSerie(mat)){
         const serie = (wrapDiv.querySelector('.s-serie').value||'').trim();
         if(!serie) serieManquante = true;
         ligne.numeroSerie = serie;
@@ -698,7 +705,7 @@ function enregistrerMouvement(){
     }
   });
   if(lignes.length===0){ alert('Ajoute au moins un matériel avec sa quantité.'); return; }
-  if(serieManquante){ alert('Renseigne le numéro de série pour chaque arme de service.'); return; }
+  if(serieManquante){ alert('Renseigne le numéro de série pour l\'arme concernée.'); return; }
 
   const id = 'M' + (mouvements.length + 1) + '-' + Date.now().toString(36).slice(-4);
   mouvements.push({id, date, unite, type, grade, nom, refSortie:ref||null, lignes});
@@ -715,6 +722,20 @@ function enregistrerMouvement(){
   document.getElementById('s-type').value='Sortie';
   ajouterLigneSaisie();
   alert(lignes.length + ' ligne(s) enregistrée(s) dans le Registre.');
+}
+function annulerSaisie(){
+  const grade = document.getElementById('s-grade').value.trim();
+  const nom = document.getElementById('s-nom').value.trim();
+  const aDesLignes = [...document.querySelectorAll('#s-lignes .s-mat')].some(sel=>sel.value);
+  if((grade || nom || aDesLignes) && !confirm('Annuler cette saisie ? Rien ne sera enregistré.')) return;
+
+  document.getElementById('s-lignes').innerHTML='';
+  document.getElementById('s-grade').value='';
+  document.getElementById('s-nom').value='';
+  document.getElementById('s-ref-wrap').style.display='none';
+  document.getElementById('s-type').value='Sortie';
+  document.getElementById('s-kit').value='';
+  ajouterLigneSaisie();
 }
 
 /* ====================== MATERIEL ====================== */
@@ -867,9 +888,12 @@ function modifierLigne(mouvementId, ligneIndex){
   const sel = document.getElementById('edit-materiel');
   sel.innerHTML = nomsMateriels().map(n=>`<option value="${n}">${n}</option>`).join('');
   sel.value = mv.lignes[ligneIndex].materiel;
+  sel.onchange = ()=>{
+    document.getElementById('edit-serie-wrap').style.display = necessiteSerie(sel.value) ? 'block' : 'none';
+  };
   document.getElementById('edit-quantite').value = mv.lignes[ligneIndex].quantite;
   const serieWrap = document.getElementById('edit-serie-wrap');
-  if(mv.unite==='Armes de service'){
+  if(necessiteSerie(mv.lignes[ligneIndex].materiel)){
     serieWrap.style.display = 'block';
     document.getElementById('edit-serie').value = mv.lignes[ligneIndex].numeroSerie || '';
   }else{
@@ -889,9 +913,11 @@ function validerModifLigne(){
   const ligne = mv.lignes[editEnCours.ligneIndex];
   const ancienMateriel = ligne.materiel, ancienneQuantite = ligne.quantite, ancienneSerie = ligne.numeroSerie;
   let nouvelleSerie = ancienneSerie;
-  if(mv.unite==='Armes de service'){
+  if(necessiteSerie(nouveauMateriel)){
     nouvelleSerie = document.getElementById('edit-serie').value.trim();
-    if(!nouvelleSerie){ alert('Le numéro de série est requis pour une arme de service.'); return; }
+    if(!nouvelleSerie){ alert('Le numéro de série est requis pour cette arme.'); return; }
+  }else{
+    nouvelleSerie = undefined;
   }
   if(ancienMateriel!==nouveauMateriel || ancienneQuantite!==nouvelleQuantite || ancienneSerie!==nouvelleSerie){
     historique.push({
@@ -903,7 +929,7 @@ function validerModifLigne(){
   }
   ligne.materiel = nouveauMateriel;
   ligne.quantite = nouvelleQuantite;
-  if(mv.unite==='Armes de service') ligne.numeroSerie = nouvelleSerie;
+  ligne.numeroSerie = nouvelleSerie;
   sauverTout();
   annulerModifLigne();
   rafraichirRegistre();
@@ -1023,6 +1049,53 @@ function exporterPDF(){
   window.print();
 }
 
+/* ----- Fiche individuelle de perception : ce qu'une personne a actuellement,
+   avec zones de signature, pour remise/reprise du matériel. ----- */
+function exporterFicheIndividuelle(nom){
+  const encours = listeSortiesEnCours().filter(r=>r.nom===nom);
+  if(encours.length===0){ alert(nom + " n'a rien en cours actuellement."); return; }
+  const derniereUnite = encours[encours.length-1].unite;
+  const lignes = encours.map(r=>{
+    const mv = mouvements.find(m=>m.id===r.mouvementId);
+    const serie = mv && mv.lignes[r.ligneIndex] ? mv.lignes[r.ligneIndex].numeroSerie : null;
+    return `<tr><td>${r.materiel}${serie?` (N° ${serie})`:''}</td><td>${r.quantite}</td></tr>`;
+  }).join('');
+  const zone = document.getElementById('zone-impression');
+  zone.innerHTML = `
+    <h1>Armurerie — Fiche de perception</h1>
+    <p>Éditée le ${new Date().toLocaleDateString('fr-FR')}</p>
+    <table style="margin-bottom:16px;">
+      <tr><td style="font-weight:bold;">Nom</td><td>${nom}</td></tr>
+      <tr><td style="font-weight:bold;">Unité</td><td>${derniereUnite}</td></tr>
+    </table>
+    <table><thead><tr><th>Matériel</th><th>Quantité</th></tr></thead><tbody>${lignes}</tbody></table>
+    <table style="margin-top:60px;border:none;"><tr style="border:none;">
+      <td style="border:none;width:50%;">Signature armurier</td>
+      <td style="border:none;width:50%;">Signature perceptrice / perceteur</td>
+    </tr></table>
+  `;
+  window.print();
+}
+
+/* ----- Inventaire du jour : tous les mouvements d'une date donnée
+   (aujourd'hui par défaut). ----- */
+function exporterInventaireJour(){
+  const date = prompt('Date à exporter (AAAA-MM-JJ) :', new Date().toISOString().slice(0,10));
+  if(!date) return;
+  const lignes = toutesLesLignes().filter(l=>l.date===date);
+  if(lignes.length===0){ alert('Aucun mouvement pour le ' + date + '.'); return; }
+  const corps = lignes.map(l=>`
+    <tr><td>${l.nom}</td><td><span>${l.type}</span></td><td>${l.materiel}</td><td>${l.quantite}</td><td>${l.unite}</td></tr>
+  `).join('');
+  const zone = document.getElementById('zone-impression');
+  zone.innerHTML = `
+    <h1>Armurerie — Mouvements du ${new Date(date).toLocaleDateString('fr-FR')}</h1>
+    <p>${lignes.length} mouvement(s)</p>
+    <table><thead><tr><th>Nom</th><th>Type</th><th>Matériel</th><th>Qté</th><th>Unité</th></tr></thead><tbody>${corps}</tbody></table>
+  `;
+  window.print();
+}
+
 /* ----- Export Excel : charge SheetJS depuis un CDN à la demande (nécessite
    une connexion internet la première fois), puis génère un vrai .xlsx à
    deux feuilles (Matériel, Registre). */
@@ -1114,11 +1187,8 @@ function verifierErreurs(){
     }
   });
 
-  // 5) Armes de service (attribution nominative) : n° de série manquant ou attribué à deux personnes à la fois
-  const encoursArmes = listeSortiesEnCours().filter(r=>{
-    const mv = mouvements.find(m=>m.id===r.mouvementId);
-    return mv && mv.unite==='Armes de service';
-  });
+  // 5) Armes suivies individuellement : n° de série manquant ou attribué à deux personnes à la fois
+  const encoursArmes = listeSortiesEnCours().filter(r => necessiteSerie(r.materiel));
   const seriesEnCours = {};
   encoursArmes.forEach(r=>{
     const mv = mouvements.find(m=>m.id===r.mouvementId);
