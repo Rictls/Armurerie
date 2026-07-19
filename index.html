@@ -83,7 +83,7 @@ td{padding:7px 6px;border-bottom:1px solid var(--bordure);}
 .hs-ligne{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--bordure);font-size:13px;}
 .hs-ligne:last-child{border-bottom:none;}
 .reint-groupe{font-size:12px;font-weight:600;color:var(--texte-att);text-transform:uppercase;letter-spacing:.03em;margin:16px 0 6px;}
-.reint-nom{font-size:14px;font-weight:600;margin:10px 0 4px;}
+.reint-nom{font-size:14px;font-weight:700;margin:10px 0 4px;background:var(--vert-bg);color:#27500A;padding:6px 8px;border-radius:6px;}
 .reint-ligne{display:flex;align-items:center;gap:10px;padding:9px 4px;border-top:1px solid var(--bordure);}
 .reint-ligne input[type=checkbox]{width:20px;height:20px;flex:0 0 auto;}
 .reint-ligne .txt{font-size:14px;}
@@ -546,7 +546,7 @@ function rafraichirReintegration(){
   Object.keys(parUnite).sort((a,b)=>a.localeCompare(b,'fr')).forEach(unite=>{
     html += `<div class="reint-groupe">${unite}</div>`;
     Object.keys(parUnite[unite]).sort((a,b)=>a.localeCompare(b,'fr')).forEach(nom=>{
-      html += `<div class="reint-nom">${nom}</div>`;
+      html += `<div class="reint-nom">${nom} (${parUnite[unite][nom].length})</div>`;
       parUnite[unite][nom].forEach(r=>{
         const mv = mouvements.find(m=>m.id===r.mouvementId);
         const serie = mv && mv.lignes[r.ligneIndex] ? mv.lignes[r.ligneIndex].numeroSerie : '';
