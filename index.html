@@ -124,6 +124,8 @@ td{padding:7px 6px;border-bottom:1px solid var(--bordure);}
       <button class="accueil-btn" onclick="allerA('dashboard')"><span class="ic">📊</span>Tableau de bord</button>
     </div>
 
+    <p id="a-derniere-sauvegarde" class="note" style="margin:2px 0 0;"></p>
+
     <div class="section-titre">Recherche</div>
     <input type="text" id="a-recherche" placeholder="Nom, matériel ou HS...">
     <div class="carte" id="accueil-recherche-resultats" style="display:none;"></div>
@@ -138,7 +140,9 @@ td{padding:7px 6px;border-bottom:1px solid var(--bordure);}
       <button class="btn-action" onclick="exporterPDF()"><span class="ic-a">📄</span>Exporter en PDF</button>
       <button class="btn-action" onclick="exporterExcel()"><span class="ic-a">📊</span>Exporter en Excel (.xlsx)</button>
       <button class="btn-action" onclick="exporterJSON()"><span class="ic-a">💾</span>Sauvegarde (.json)</button>
+      <button class="btn-action" onclick="verifierErreurs()"><span class="ic-a">🔎</span>Vérifier les erreurs</button>
     </div>
+    <div class="carte" id="accueil-verif-resultats" style="display:none;"></div>
   </section>
 
   <!-- ================= SAISIE RAPIDE ================= -->
@@ -158,15 +162,27 @@ td{padding:7px 6px;border-bottom:1px solid var(--bordure);}
       </select>
 
       <label>Grade</label>
-      <input type="text" id="s-grade" placeholder="ex: MJR">
+      <input type="text" id="s-grade" placeholder="ex: MJR" list="liste-grades">
+      <datalist id="liste-grades"></datalist>
 
       <label>Nom</label>
-      <input type="text" id="s-nom" placeholder="ex: RAZA">
+      <input type="text" id="s-nom" placeholder="ex: RAZA" list="liste-noms">
+      <datalist id="liste-noms"></datalist>
 
       <div id="s-ref-wrap" style="display:none;">
         <label>Réf. Sortie (mouvement d'origine)</label>
         <select id="s-ref"></select>
-        <p class="note">En choisissant une référence, les lignes ci-dessous se remplissent automatiquement avec ce qui reste à rendre.</p>
+        <p class="note">Tape le nom ci-dessus pour filtrer directement ses sorties en cours. En choisissant une référence, les lignes ci-dessous se remplissent automatiquement avec ce qui reste à rendre.</p>
+      </div>
+
+      <div class="section-titre" style="margin-top:16px;">Kit prédéfini (optionnel)</div>
+      <div style="display:flex;gap:8px;">
+        <select id="s-kit" style="flex:1;"><option value="">— Aucun —</option></select>
+        <button class="btn secondaire petit" style="flex:0 0 auto;" onclick="appliquerKit()">Appliquer</button>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:6px;">
+        <button class="btn secondaire petit" style="flex:1;" onclick="sauverKitDepuisLignes()">💾 Créer un kit à partir des lignes ci-dessous</button>
+        <button class="btn secondaire petit" style="flex:0 0 auto;color:var(--rouge);border-color:#F0D4D4;" onclick="supprimerKit()">🗑️</button>
       </div>
 
       <label style="margin-top:16px;">Matériel</label>
@@ -185,15 +201,31 @@ td{padding:7px 6px;border-bottom:1px solid var(--bordure);}
     </div>
     <input type="text" id="m-recherche" placeholder="Rechercher un matériel..." style="margin-bottom:10px;">
     <div id="mat-liste"></div>
+
+    <div class="section-titre">Armes de service — attribution nominative</div>
+    <p class="note" style="margin-top:-4px;">Concerne uniquement les PA MASG1 attribués individuellement aux cadres (pas le pool RGPL des stagiaires).</p>
+    <div id="armes-nominatives-liste"></div>
+    <button class="btn secondaire petit" onclick="ajouterArmeNominative()">+ Enregistrer une arme (n° de série)</button>
   </section>
 
   <!-- ================= REGISTRE ================= -->
   <section id="page-registre" class="page">
-    <h2>Registre unique de perception / réintégration</h2>
+    <div class="top-actions">
+      <h2 style="margin:0;">Registre unique de perception / réintégration</h2>
+      <button class="icon-btn" onclick="basculerHistorique()">🕓 Historique</button>
+    </div>
+    <div class="carte" id="historique-panel" style="display:none;"></div>
     <div class="filtre-bar">
       <select id="r-filtre-unite"><option value="">Toutes unités</option></select>
       <select id="r-filtre-type"><option value="">Tout type</option><option value="Sortie">Sortie</option><option value="Retour">Retour</option></select>
       <input type="text" id="r-filtre-nom" placeholder="Rechercher un nom ou un matériel...">
+    </div>
+    <div class="filtre-bar">
+      <select id="r-groupe">
+        <option value="">Grouper par : aucun (liste chronologique)</option>
+        <option value="nom">Grouper par personne</option>
+        <option value="materiel">Grouper par matériel</option>
+      </select>
     </div>
 
     <div class="carte" id="edit-panel" style="display:none;">
@@ -306,6 +338,15 @@ const SEED_MOUVEMENTS = [{"id": "M1", "date": "2026-07-18", "unite": "Peloton 1"
 
 let materiels = charger('am_materiels', SEED_MATERIELS);
 let mouvements = charger('am_mouvements', SEED_MOUVEMENTS);
+let kits = charger('am_kits', [
+  {nom:'Kit stagiaire standard', lignes:[
+    {materiel:'PA MASG1', quantite:1},
+    {materiel:'CHARGEURS', quantite:1},
+    {materiel:'MUNITIONS INERTES', quantite:50}
+  ]}
+]);
+let historique = charger('am_historique', []);
+let armesNominatives = charger('am_armes_nominatives', []);
 
 function charger(cle, defaut){
   try{
@@ -319,7 +360,7 @@ function sauvegarder(cle, valeur){
   try{ localStorage.setItem(cle, JSON.stringify(valeur)); }
   catch(e){ console.warn('Stockage local indisponible — les données ne persisteront pas.', e); }
 }
-function sauverTout(){ sauvegarder('am_materiels', materiels); sauvegarder('am_mouvements', mouvements); }
+function sauverTout(){ sauvegarder('am_materiels', materiels); sauvegarder('am_mouvements', mouvements); sauvegarder('am_kits', kits); sauvegarder('am_historique', historique); sauvegarder('am_armes_nominatives', armesNominatives); }
 
 function nomsMateriels(){
   const set = new Set();
@@ -386,11 +427,12 @@ function allerA(page){
   const navBtn = document.querySelector('nav button[data-page="'+page+'"]');
   if(navBtn) navBtn.classList.add('actif');
   if(page==='accueil') rafraichirAccueil();
-  if(page==='materiel') rafraichirMateriel();
+  if(page==='materiel'){ rafraichirMateriel(); rafraichirArmesNominatives(); }
   if(page==='registre') rafraichirRegistre();
   if(page==='dashboard') rafraichirDashboard();
 }
 function rafraichirAccueil(){
+  afficherDerniereSauvegarde();
   const hsLignes = materiels.filter(m => Number(m.hs||0) > 0);
   const bloc = document.getElementById('accueil-hs');
   if(hsLignes.length===0){
@@ -401,6 +443,19 @@ function rafraichirAccueil(){
     `).join('');
   }
   rechercheAccueil();
+}
+function afficherDerniereSauvegarde(){
+  const p = document.getElementById('a-derniere-sauvegarde');
+  let iso = null;
+  try{ iso = localStorage.getItem('am_derniere_sauvegarde'); }catch(e){}
+  if(!iso){
+    p.innerHTML = `<span style="color:var(--rouge);">Aucune sauvegarde (.json) effectuée pour l'instant</span>`;
+    return;
+  }
+  const jours = Math.floor((new Date() - new Date(iso)) / 86400000);
+  const texte = jours<=0 ? "aujourd'hui" : jours===1 ? 'il y a 1 jour' : `il y a ${jours} jours`;
+  const couleur = jours>=7 ? 'var(--rouge)' : jours>=3 ? '#8A5A00' : 'var(--texte-att)';
+  p.innerHTML = `Dernière sauvegarde (.json) : <span style="color:${couleur};font-weight:600;">${texte}</span>`;
 }
 function rechercheAccueil(){
   const q = (document.getElementById('a-recherche').value||'').trim().toLowerCase();
@@ -424,7 +479,11 @@ function rechercheAccueil(){
     r.nom.toLowerCase().includes(q) || r.materiel.toLowerCase().includes(q)
   );
   if(encours.length){
+    const nomsUniques = Array.from(new Set(encours.map(r=>r.nom)));
     html += `<p style="font-size:12px;font-weight:600;color:var(--texte-att);margin:14px 0 6px;">Sorties en cours</p>`;
+    if(nomsUniques.length===1){
+      html += `<button class="btn-action" style="margin-bottom:8px;" onclick="toutRendre('${nomsUniques[0].replace(/'/g,"\\'")}')"><span class="ic-a">🔄</span>Tout rendre pour ${nomsUniques[0]}</button>`;
+    }
     html += encours.map(r=>`<div class="hs-ligne resultat-clic" onclick="allerVersRegistreEdit('${r.mouvementId}',${r.ligneIndex})"><span>${r.nom} — ${r.materiel} (${r.unite})</span><span style="font-weight:600;">${r.quantite} ›</span></div>`).join('');
   }
 
@@ -439,6 +498,28 @@ function rechercheAccueil(){
 
   zone.style.display = 'block';
   zone.innerHTML = html || '<p class="vide" style="padding:4px 0;">Aucun résultat</p>';
+}
+function toutRendre(nom){
+  if(!confirm(`Créer un retour complet pour tout ce que ${nom} a actuellement en cours ?`)) return;
+  const soldes = calculerSoldes();
+  const dateJour = new Date().toISOString().slice(0,10);
+  let mouvementsCrees = 0;
+  mouvements.filter(m=>m.type==='Sortie' && m.nom===nom).forEach(source=>{
+    const lignesRestantes = source.lignes.map(l=>{
+      const rendu = (soldes[source.id] && soldes[source.id][l.materiel]) || 0;
+      const solde = Number(l.quantite||0) - rendu;
+      return solde>0 ? {materiel:l.materiel, quantite:solde} : null;
+    }).filter(Boolean);
+    if(lignesRestantes.length){
+      mouvementsCrees++;
+      const id = 'M' + (mouvements.length + 1) + '-' + Date.now().toString(36).slice(-4) + mouvementsCrees;
+      mouvements.push({id, date:dateJour, unite:source.unite, type:'Retour', grade:source.grade, nom:source.nom, refSortie:source.id, lignes:lignesRestantes});
+    }
+  });
+  sauverTout();
+  rafraichirAccueil();
+  rafraichirDashboard();
+  alert(mouvementsCrees + ' retour(s) enregistré(s) pour ' + nom + '.');
 }
 function allerVersMateriel(index){
   allerA('materiel');
@@ -466,9 +547,15 @@ function remplirSelectUnites(sel){
 function initSaisie(){
   document.getElementById('s-date').value = new Date().toISOString().slice(0,10);
   remplirSelectUnites(document.getElementById('s-unite'));
+  remplirDatalistNoms();
+  remplirDatalistGrades();
+  remplirSelectKits();
   document.getElementById('s-type').addEventListener('change', e=>{
     document.getElementById('s-ref-wrap').style.display = e.target.value==='Retour' ? 'block' : 'none';
     if(e.target.value==='Retour') remplirRefSortie();
+  });
+  document.getElementById('s-nom').addEventListener('input', ()=>{
+    if(document.getElementById('s-type').value==='Retour') remplirRefSortie();
   });
   document.getElementById('s-ref').addEventListener('change', e=>{
     const id = e.target.value;
@@ -485,18 +572,70 @@ function initSaisie(){
   });
   ajouterLigneSaisie();
 }
+function remplirDatalistNoms(){
+  const noms = Array.from(new Set(mouvements.map(m=>m.nom))).sort((a,b)=>a.localeCompare(b,'fr'));
+  document.getElementById('liste-noms').innerHTML = noms.map(n=>`<option value="${n}">`).join('');
+}
+function remplirDatalistGrades(){
+  const grades = Array.from(new Set(mouvements.map(m=>m.grade))).sort((a,b)=>a.localeCompare(b,'fr'));
+  document.getElementById('liste-grades').innerHTML = grades.map(g=>`<option value="${g}">`).join('');
+}
+function remplirSelectKits(){
+  const sel = document.getElementById('s-kit');
+  sel.innerHTML = '<option value="">— Aucun —</option>' + kits.map((k,i)=>`<option value="${i}">${k.nom}</option>`).join('');
+}
+function appliquerKit(){
+  const idx = document.getElementById('s-kit').value;
+  if(idx===''){ return; }
+  const kit = kits[parseInt(idx)];
+  if(!kit) return;
+  document.getElementById('s-lignes').innerHTML = '';
+  kit.lignes.forEach(l => ajouterLigneSaisie(l.materiel, l.quantite));
+}
+function sauverKitDepuisLignes(){
+  const lignes = [];
+  document.querySelectorAll('#s-lignes .ligne-mat').forEach(div=>{
+    const mat = div.querySelector('.s-mat').value;
+    const qte = Number(div.querySelector('.s-qte').value);
+    if(mat && qte>0) lignes.push({materiel:mat, quantite:qte});
+  });
+  if(lignes.length===0){ alert('Ajoute au moins un matériel avec sa quantité avant de créer un kit.'); return; }
+  const nom = prompt('Nom du kit (ex: "Kit stagiaire standard") :');
+  if(!nom || !nom.trim()) return;
+  kits.push({nom:nom.trim(), lignes});
+  sauverTout();
+  remplirSelectKits();
+  alert('Kit "'+nom.trim()+'" créé.');
+}
+function supprimerKit(){
+  const idx = document.getElementById('s-kit').value;
+  if(idx===''){ alert('Choisis un kit à supprimer dans la liste.'); return; }
+  const kit = kits[parseInt(idx)];
+  if(!kit) return;
+  if(confirm('Supprimer le kit "'+kit.nom+'" ?')){
+    kits.splice(parseInt(idx),1);
+    sauverTout();
+    remplirSelectKits();
+  }
+}
 function remplirRefSortie(){
   const sel = document.getElementById('s-ref');
   const soldes = calculerSoldes();
+  const nomTape = document.getElementById('s-nom').value.trim().toLowerCase();
   const options = mouvements.filter(m=>{
     if(m.type!=='Sortie') return false;
+    if(nomTape && !m.nom.toLowerCase().includes(nomTape)) return false;
     return m.lignes.some(l=>{
       const rendu=(soldes[m.id]&&soldes[m.id][l.materiel])||0;
       return Number(l.quantite||0)-rendu>0;
     });
   });
+  if(options.length===0){
+    sel.innerHTML = '<option value="">Aucune sortie en cours' + (nomTape?' pour ce nom':'') + '</option>';
+    return;
+  }
   sel.innerHTML = '<option value="">— choisir —</option>' + options.map(m=>
-    `<option value="${m.id}">${m.id} — ${m.nom} (${m.date})</option>`).join('');
+    `<option value="${m.id}">${m.nom} — ${m.date} (${m.id})</option>`).join('');
 }
 function ajouterLigneSaisie(materielVal, qteVal){
   const wrap = document.getElementById('s-lignes');
@@ -506,7 +645,7 @@ function ajouterLigneSaisie(materielVal, qteVal){
   const optionVide = `<option value="" ${materielVal?'':'selected'}>— Choisir —</option>`;
   div.innerHTML = `
     <div><label>Matériel</label><select class="s-mat">${optionVide}${noms.map(n=>`<option value="${n}" ${n===materielVal?'selected':''}>${n}</option>`).join('')}</select></div>
-    <div><label>Qté</label><input type="number" class="s-qte" min="0" value="${qteVal||''}"></div>
+    <div><label>Qté</label><input type="number" class="s-qte" min="0" value="${qteVal!==undefined?qteVal:1}"></div>
     <button class="x-btn" onclick="this.parentElement.remove()">✕</button>
   `;
   wrap.appendChild(div);
@@ -538,6 +677,8 @@ function enregistrerMouvement(){
   sauverTout();
   rafraichirAccueil();
   rafraichirDashboard();
+  remplirDatalistNoms();
+  remplirDatalistGrades();
 
   document.getElementById('s-lignes').innerHTML='';
   document.getElementById('s-grade').value='';
@@ -609,6 +750,48 @@ function supprimerMateriel(i){
   if(confirm('Supprimer cette ligne ?')){ materiels.splice(i,1); sauverTout(); rafraichirMateriel(); }
 }
 
+/* ----- Armes de service : attribution nominative (PA MASG1 uniquement) ----- */
+function rafraichirArmesNominatives(){
+  const liste = document.getElementById('armes-nominatives-liste');
+  const noms = Array.from(new Set(mouvements.map(m=>m.nom))).sort((a,b)=>a.localeCompare(b,'fr'));
+  if(armesNominatives.length===0){
+    liste.innerHTML = '<p class="vide" style="padding:4px 0;">Aucune arme enregistrée pour l\'instant.</p>';
+    return;
+  }
+  liste.innerHTML = armesNominatives.map((a,i)=>`
+    <div class="mat-card">
+      <div class="l1">
+        <input type="text" value="${a.serie}" placeholder="N° de série" onchange="armesNominatives[${i}].serie=this.value;sauverTout();">
+        <button class="x-btn" onclick="supprimerArmeNominative(${i})">✕</button>
+      </div>
+      <div class="l2" style="grid-template-columns:1fr;">
+        <div class="champ">
+          <label>Attribué à</label>
+          <input type="text" value="${a.attributaire||''}" placeholder="Nom du cadre" list="liste-noms-armes" onchange="armesNominatives[${i}].attributaire=this.value;sauverTout();">
+        </div>
+      </div>
+    </div>
+  `).join('') + `<datalist id="liste-noms-armes">${noms.map(n=>`<option value="${n}">`).join('')}</datalist>`;
+}
+function ajouterArmeNominative(){
+  armesNominatives.push({serie:'', attributaire:''});
+  sauverTout();
+  rafraichirArmesNominatives();
+  const cartes = document.querySelectorAll('#armes-nominatives-liste .mat-card');
+  const derniere = cartes[cartes.length-1];
+  if(derniere){
+    derniere.scrollIntoView({behavior:'smooth', block:'center'});
+    derniere.querySelector('.l1 input').focus();
+  }
+}
+function supprimerArmeNominative(i){
+  if(confirm('Supprimer cette arme du registre nominatif ?')){
+    armesNominatives.splice(i,1);
+    sauverTout();
+    rafraichirArmesNominatives();
+  }
+}
+
 /* ====================== REGISTRE ====================== */
 function toutesLesLignes(){
   const soldes = calculerSoldes();
@@ -634,6 +817,7 @@ function rafraichirRegistre(){
   const fu = document.getElementById('r-filtre-unite').value;
   const ft = document.getElementById('r-filtre-type').value;
   const fn = document.getElementById('r-filtre-nom').value.toLowerCase();
+  const groupe = document.getElementById('r-groupe').value;
 
   let lignes = toutesLesLignes();
   if(fu) lignes = lignes.filter(l=>l.unite===fu);
@@ -642,7 +826,8 @@ function rafraichirRegistre(){
 
   const tbody = document.querySelector('#tbl-registre tbody');
   if(lignes.length===0){ tbody.innerHTML = '<tr><td colspan="11" class="vide">Aucun mouvement</td></tr>'; return; }
-  tbody.innerHTML = lignes.map(l=>`
+
+  const ligneHTML = l => `
     <tr>
       <td>${l.date}</td><td>${l.unite}</td>
       <td><span class="badge ${l.type==='Sortie'?'sortie':'retour'}">${l.type}</span></td>
@@ -651,10 +836,44 @@ function rafraichirRegistre(){
       <td>${l.type==='Sortie'?l.solde:''}</td>
       <td>${l.statut==='Soldé'?`<span class="badge sortie">Soldé</span>`:l.type==='Sortie'?`<span class="badge rouge">En cours</span>`:''}</td>
       <td><button class="icon-btn" style="padding:4px 8px;" onclick="modifierLigne('${l.id}',${l.ligneIndex})">✏️</button></td>
-    </tr>`).join('');
+    </tr>`;
+
+  if(!groupe){
+    tbody.innerHTML = lignes.map(ligneHTML).join('');
+    return;
+  }
+
+  const cle = groupe==='nom' ? 'nom' : 'materiel';
+  const groupes = {};
+  lignes.forEach(l=>{
+    const k = l[cle];
+    if(!groupes[k]) groupes[k] = [];
+    groupes[k].push(l);
+  });
+  const clesTriees = Object.keys(groupes).sort((a,b)=>a.localeCompare(b,'fr'));
+  tbody.innerHTML = clesTriees.map(k=>
+    `<tr><td colspan="11" style="background:var(--vert-bg);font-weight:700;color:#27500A;">${k} (${groupes[k].length})</td></tr>`
+    + groupes[k].map(ligneHTML).join('')
+  ).join('');
 }
 
 let editEnCours = null;
+function basculerHistorique(){
+  const panel = document.getElementById('historique-panel');
+  if(panel.style.display==='block'){ panel.style.display='none'; return; }
+  if(historique.length===0){
+    panel.innerHTML = '<p class="vide" style="padding:4px 0;">Aucune modification enregistrée pour l\'instant.</p>';
+  }else{
+    const tri = [...historique].sort((a,b)=> b.date.localeCompare(a.date));
+    panel.innerHTML = tri.map(h=>`
+      <div class="hs-ligne" style="flex-direction:column;align-items:flex-start;gap:2px;">
+        <span style="font-size:11px;color:var(--texte-att);">${new Date(h.date).toLocaleString('fr-FR')} — ${h.nom} (${h.mouvementId})</span>
+        <span style="font-size:13px;"><span style="color:var(--rouge);text-decoration:line-through;">${h.avant}</span> → <span style="color:#3B6D11;font-weight:600;">${h.apres}</span></span>
+      </div>
+    `).join('');
+  }
+  panel.style.display = 'block';
+}
 function modifierLigne(mouvementId, ligneIndex){
   const mv = mouvements.find(m=>m.id===mouvementId);
   if(!mv) return;
@@ -674,8 +893,18 @@ function validerModifLigne(){
   const nouveauMateriel = document.getElementById('edit-materiel').value;
   const nouvelleQuantite = Number(document.getElementById('edit-quantite').value);
   if(!nouveauMateriel || !(nouvelleQuantite>0)){ alert('Matériel et quantité (>0) requis.'); return; }
-  mv.lignes[editEnCours.ligneIndex].materiel = nouveauMateriel;
-  mv.lignes[editEnCours.ligneIndex].quantite = nouvelleQuantite;
+  const ligne = mv.lignes[editEnCours.ligneIndex];
+  const ancienMateriel = ligne.materiel, ancienneQuantite = ligne.quantite;
+  if(ancienMateriel!==nouveauMateriel || ancienneQuantite!==nouvelleQuantite){
+    historique.push({
+      date: new Date().toISOString(),
+      mouvementId: mv.id, nom: mv.nom,
+      avant: `${ancienMateriel} × ${ancienneQuantite}`,
+      apres: `${nouveauMateriel} × ${nouvelleQuantite}`
+    });
+  }
+  ligne.materiel = nouveauMateriel;
+  ligne.quantite = nouvelleQuantite;
   sauverTout();
   annulerModifLigne();
   rafraichirRegistre();
@@ -765,6 +994,8 @@ function exporterJSON(){
   a.href = URL.createObjectURL(blob);
   a.download = 'armurerie-export-'+new Date().toISOString().slice(0,10)+'.json';
   a.click();
+  try{ localStorage.setItem('am_derniere_sauvegarde', new Date().toISOString()); }catch(e){}
+  rafraichirAccueil();
 }
 
 /* ----- Export PDF : génère une vue imprimable, puis ouvre la boîte de dialogue
@@ -826,7 +1057,8 @@ function genererXLSX(){
 }
 
 function reinitialiserRegistre(){
-  if(confirm('Fin de stage : effacer toutes les perceptions/retours du registre ? La liste des matériels et leurs quantités sont conservées.')){
+  if(confirm('Fin de stage : effacer toutes les perceptions/retours du registre ? La liste des matériels et leurs quantités sont conservées.\n\nUne sauvegarde (.json) va être téléchargée automatiquement avant l\'effacement.')){
+    exporterJSON();
     mouvements = [];
     sauverTout();
     rafraichirAccueil();
@@ -835,11 +1067,94 @@ function reinitialiserRegistre(){
     alert('Registre réinitialisé — prêt pour le prochain stage.');
   }
 }
+function verifierErreurs(){
+  const problemes = [];
+  const enCours = enCoursParMateriel();
+  const noms = nomsMateriels();
+
+  // 1) Matériel dont la quantité perçue dépasse le stock total
+  noms.forEach(n=>{
+    const s = enCours[n]||0;
+    const stock = stockTotal(n);
+    const hs = hsTotal(n);
+    if(s > (stock - hs)){
+      problemes.push(`⚠️ ${n} : ${s} en perception pour seulement ${stock - hs} disponible en stock (hors HS).`);
+    }
+  });
+
+  // 2) Lignes de mouvement dont le matériel n'existe plus dans le stock
+  const nomsValides = new Set(noms);
+  mouvements.forEach(m=>{
+    m.lignes.forEach(l=>{
+      if(!nomsValides.has(l.materiel)){
+        problemes.push(`⚠️ Mouvement ${m.id} (${m.nom}, ${m.date}) : matériel "${l.materiel}" introuvable dans le stock actuel.`);
+      }
+    });
+  });
+
+  // 3) Retours dont la référence de sortie n'existe plus
+  mouvements.forEach(m=>{
+    if(m.type==='Retour' && m.refSortie){
+      const source = mouvements.find(x=>x.id===m.refSortie);
+      if(!source){
+        problemes.push(`⚠️ Retour ${m.id} (${m.nom}, ${m.date}) : référence de sortie "${m.refSortie}" introuvable.`);
+      }
+    }
+  });
+
+  // 4) Doublons de nom de matériel avec des casses/espaces différents (risque de double-saisie)
+  const vusMinuscule = {};
+  noms.forEach(n=>{
+    const cle = n.trim().toLowerCase();
+    if(!vusMinuscule[cle]) vusMinuscule[cle] = [];
+    vusMinuscule[cle].push(n);
+  });
+  Object.values(vusMinuscule).forEach(groupe=>{
+    if(groupe.length>1){
+      problemes.push(`⚠️ Noms de matériel proches, vérifie qu'il ne s'agit pas d'un doublon : ${groupe.join(' / ')}`);
+    }
+  });
+
+  // 5) Armes nominatives : numéro de série manquant, doublon, ou dépassement du stock déclaré
+  const seriesVues = {};
+  armesNominatives.forEach((a,i)=>{
+    if(!a.serie || !a.serie.trim()){
+      problemes.push(`⚠️ Arme nominative #${i+1} : numéro de série manquant.`);
+    }else{
+      const cle = a.serie.trim().toLowerCase();
+      seriesVues[cle] = (seriesVues[cle]||0) + 1;
+    }
+    if(!a.attributaire || !a.attributaire.trim()){
+      problemes.push(`⚠️ Arme nominative "${a.serie||'(sans n° de série)'}" : pas d'attributaire renseigné.`);
+    }
+  });
+  Object.entries(seriesVues).forEach(([serie,n])=>{
+    if(n>1) problemes.push(`⚠️ Le numéro de série "${serie}" est utilisé ${n} fois — vérifie qu'il n'y a pas de doublon.`);
+  });
+  const stockArmeService = stockTotal('PA MASG1 - arme de service');
+  if(armesNominatives.length > stockArmeService){
+    problemes.push(`⚠️ ${armesNominatives.length} armes nominatives enregistrées, mais seulement ${stockArmeService} en stock pour "PA MASG1 - arme de service".`);
+  }
+
+  const zone = document.getElementById('accueil-verif-resultats');
+  zone.style.display = 'block';
+  if(problemes.length===0){
+    zone.innerHTML = '<p style="color:#3B6D11;font-weight:600;padding:4px 0;">✅ Aucune anomalie détectée.</p>';
+  }else{
+    zone.innerHTML = `<p style="font-weight:600;margin:0 0 8px;">${problemes.length} anomalie(s) détectée(s) :</p>`
+      + problemes.map(p=>`<p style="font-size:13px;margin:0 0 8px;">${p}</p>`).join('');
+  }
+  zone.scrollIntoView({behavior:'smooth', block:'center'});
+}
 function reinitialiser(){
-  if(confirm('Cela efface toutes les données locales (matériel et registre). Continuer ?')){
+  if(confirm('Cela efface toutes les données locales (matériel, registre, kits, armes nominatives). Continuer ?\n\nUne sauvegarde (.json) va être téléchargée automatiquement avant l\'effacement.')){
+    exporterJSON();
     try{
       localStorage.removeItem('am_materiels');
       localStorage.removeItem('am_mouvements');
+      localStorage.removeItem('am_kits');
+      localStorage.removeItem('am_historique');
+      localStorage.removeItem('am_armes_nominatives');
     }catch(e){}
     location.reload();
   }
@@ -852,6 +1167,7 @@ rafraichirAccueil();
 document.getElementById('r-filtre-unite').addEventListener('change', rafraichirRegistre);
 document.getElementById('r-filtre-type').addEventListener('change', rafraichirRegistre);
 document.getElementById('r-filtre-nom').addEventListener('input', rafraichirRegistre);
+document.getElementById('r-groupe').addEventListener('change', rafraichirRegistre);
 document.getElementById('m-recherche').addEventListener('input', rafraichirMateriel);
 document.getElementById('a-recherche').addEventListener('input', rechercheAccueil);
 
