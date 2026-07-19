@@ -37,6 +37,10 @@ input:focus,select:focus{outline:2px solid var(--vert);outline-offset:-1px;}
 .btn.petit{width:auto;padding:7px 12px;font-size:13px;margin-top:0;}
 .ligne-mat{display:grid;grid-template-columns:1fr 70px 32px;gap:6px;align-items:end;margin-bottom:8px;}
 .ligne-mat label{margin:0 0 3px;}
+.ligne-mat-wrap{margin-bottom:4px;}
+.ligne-serie{margin:-2px 0 10px;}
+.ligne-serie label{display:block;font-size:11px;font-weight:600;color:var(--brique);margin:0 0 3px;}
+.ligne-serie input{border-color:#E3C9C0;}
 .x-btn{background:var(--rouge-bg);color:var(--rouge);border:none;border-radius:8px;height:38px;font-size:16px;}
 table{width:100%;border-collapse:collapse;font-size:13px;}
 th{text-align:left;padding:7px 6px;color:var(--texte-att);font-weight:600;border-bottom:1px solid var(--bordure);white-space:nowrap;}
@@ -201,11 +205,6 @@ td{padding:7px 6px;border-bottom:1px solid var(--bordure);}
     </div>
     <input type="text" id="m-recherche" placeholder="Rechercher un matériel..." style="margin-bottom:10px;">
     <div id="mat-liste"></div>
-
-    <div class="section-titre">Armes de service — attribution nominative</div>
-    <p class="note" style="margin-top:-4px;">Concerne uniquement les PA MASG1 attribués individuellement aux cadres (pas le pool RGPL des stagiaires).</p>
-    <div id="armes-nominatives-liste"></div>
-    <button class="btn secondaire petit" onclick="ajouterArmeNominative()">+ Enregistrer une arme (n° de série)</button>
   </section>
 
   <!-- ================= REGISTRE ================= -->
@@ -233,6 +232,10 @@ td{padding:7px 6px;border-bottom:1px solid var(--bordure);}
       <select id="edit-materiel"></select>
       <label>Quantité</label>
       <input type="number" id="edit-quantite" min="0">
+      <div id="edit-serie-wrap" style="display:none;">
+        <label>N° de série</label>
+        <input type="text" id="edit-serie" placeholder="ex: SN-001">
+      </div>
       <div style="display:flex;gap:8px;margin-top:12px;">
         <button class="btn" style="margin-top:0;" onclick="validerModifLigne()">Enregistrer</button>
         <button class="btn secondaire" style="margin-top:0;" onclick="annulerModifLigne()">Annuler</button>
@@ -331,7 +334,7 @@ td{padding:7px 6px;border-bottom:1px solid var(--bordure);}
 
 <script>
 /* ====================== DONNEES ====================== */
-const UNITES = ['Peloton 1','Peloton 2','Peloton 3','Peloton 4','BLOC 2','Prêt MPI'];
+const UNITES = ['Peloton 1','Peloton 2','Peloton 3','Peloton 4','BLOC 2','Prêt MPI','Armes de service'];
 
 const SEED_MATERIELS = [{"categorie": "matériels RGPL", "materiel": "PA MASG1 - arme de service", "quantite": 8}, {"categorie": "matériels RGPL", "materiel": "MUNITIONS DE SERVICE", "quantite": 240}, {"categorie": "matériels RGPL", "materiel": "PA MASG1", "quantite": 62}, {"categorie": "matériels RGPL", "materiel": "ASSEMBLEUR DE STOCKAGE", "quantite": 62}, {"categorie": "matériels RGPL", "materiel": "CANON TIR RÉDUIT", "quantite": 10}, {"categorie": "matériels RGPL", "materiel": "CHARGEURS", "quantite": 140}, {"categorie": "matériels RGPL", "materiel": "CHARGETTE", "quantite": 2}, {"categorie": "matériels RGPL", "materiel": "PIE", "quantite": 7}, {"categorie": "matériels RGPL", "materiel": "CARTOUCHE PIE", "quantite": 144}, {"categorie": "matériels RGPL", "materiel": "MALLETTE DE TRANSPORT PIE", "quantite": 7}, {"categorie": "matériels RGPL", "materiel": "MUNITIONS INERTES", "quantite": 100}, {"categorie": "matériels RGPL", "materiel": "BOULETS EXERCICES / GRENADES A PLATRE", "quantite": 124}, {"categorie": "matériels RGPL", "materiel": "BPT", "quantite": 80}, {"categorie": "matériels RGPL", "materiel": "ETUIS BPT", "quantite": 80}, {"categorie": "matériels RGPL", "materiel": "TUBE À SABLE", "quantite": 3}, {"categorie": "matériels RGPL", "materiel": "ÉTUIS PA MAS G1 - DROITIER", "quantite": 70}, {"categorie": "matériels RGPL", "materiel": "ÉTUIS PA MAS G1 - GAUCHER", "quantite": 10}, {"categorie": "matériels RGPL", "materiel": "BLUE GUN - PA MAS G1", "quantite": 16}, {"categorie": "matériels RGPL", "materiel": "COUTEAUX - BLACK", "quantite": 10}, {"categorie": "matériels RGPL", "materiel": "BPT MOUSSE", "quantite": 34}, {"categorie": "matériels RGPL", "materiel": "MENOTTES Factices", "quantite": 60}, {"categorie": "matériels RGPL", "materiel": "BAGS", "quantite": 19}, {"categorie": "matériels RGPL", "materiel": "GPBI", "quantite": 10}, {"categorie": "matériels RGPL", "materiel": "lot SECOURISME", "quantite": 3}, {"categorie": "matériels RGPL", "materiel": "DRAPEAU TRICOLORE", "quantite": 1}, {"categorie": "matériels RGPL", "materiel": "CANTINE TIR", "quantite": 1}, {"categorie": "matériels RGPL", "materiel": "ENROULEUR ELECTRIQUE", "quantite": 1}, {"categorie": "matériels RGPL", "materiel": "COUVERTURE", "quantite": 6}, {"categorie": "matériels CRI", "materiel": "MUNITIONS INERTES", "quantite": 80}, {"categorie": "matériels CRI", "materiel": "BLUE GUN - PA MAS G1", "quantite": 3}, {"categorie": "matériels CRI", "materiel": "RED GUN - SIG PRO", "quantite": 30}, {"categorie": "matériels CRI", "materiel": "BAGS", "quantite": 10}];
 const SEED_MOUVEMENTS = [{"id": "M1", "date": "2026-07-18", "unite": "Peloton 1", "type": "Sortie", "grade": "MJR", "nom": "RAZA", "refSortie": null, "lignes": [{"materiel": "PA MASG1", "quantite": 6}, {"materiel": "MENOTTES Factices", "quantite": 10}, {"materiel": "BPT", "quantite": 20}, {"materiel": "BLUE GUN - PA MAS G1", "quantite": 14}]}, {"id": "M2", "date": "2026-07-18", "unite": "Peloton 2", "type": "Sortie", "grade": "MJR", "nom": "BROSSET", "refSortie": null, "lignes": [{"materiel": "PA MASG1", "quantite": 22}, {"materiel": "CHARGEURS", "quantite": 22}, {"materiel": "MUNITIONS INERTES", "quantite": 50}, {"materiel": "CHARGETTE", "quantite": 1}]}, {"id": "M3", "date": "2026-07-18", "unite": "Peloton 3", "type": "Sortie", "grade": "mjr", "nom": "vie", "refSortie": null, "lignes": [{"materiel": "PA MASG1", "quantite": 23}, {"materiel": "CHARGEURS", "quantite": 23}, {"materiel": "MUNITIONS INERTES", "quantite": 50}, {"materiel": "BPT", "quantite": 23}, {"materiel": "MENOTTES Factices", "quantite": 12}, {"materiel": "ASSEMBLEUR DE STOCKAGE", "quantite": 12}, {"materiel": "COUTEAUX - BLACK", "quantite": 2}]}];
@@ -346,7 +349,6 @@ let kits = charger('am_kits', [
   ]}
 ]);
 let historique = charger('am_historique', []);
-let armesNominatives = charger('am_armes_nominatives', []);
 
 function charger(cle, defaut){
   try{
@@ -360,7 +362,7 @@ function sauvegarder(cle, valeur){
   try{ localStorage.setItem(cle, JSON.stringify(valeur)); }
   catch(e){ console.warn('Stockage local indisponible — les données ne persisteront pas.', e); }
 }
-function sauverTout(){ sauvegarder('am_materiels', materiels); sauvegarder('am_mouvements', mouvements); sauvegarder('am_kits', kits); sauvegarder('am_historique', historique); sauvegarder('am_armes_nominatives', armesNominatives); }
+function sauverTout(){ sauvegarder('am_materiels', materiels); sauvegarder('am_mouvements', mouvements); sauvegarder('am_kits', kits); sauvegarder('am_historique', historique); }
 
 function nomsMateriels(){
   const set = new Set();
@@ -427,7 +429,7 @@ function allerA(page){
   const navBtn = document.querySelector('nav button[data-page="'+page+'"]');
   if(navBtn) navBtn.classList.add('actif');
   if(page==='accueil') rafraichirAccueil();
-  if(page==='materiel'){ rafraichirMateriel(); rafraichirArmesNominatives(); }
+  if(page==='materiel') rafraichirMateriel();
   if(page==='registre') rafraichirRegistre();
   if(page==='dashboard') rafraichirDashboard();
 }
@@ -550,6 +552,7 @@ function initSaisie(){
   remplirDatalistNoms();
   remplirDatalistGrades();
   remplirSelectKits();
+  document.getElementById('s-unite').addEventListener('change', basculerAffichageSerie);
   document.getElementById('s-type').addEventListener('change', e=>{
     document.getElementById('s-ref-wrap').style.display = e.target.value==='Retour' ? 'block' : 'none';
     if(e.target.value==='Retour') remplirRefSortie();
@@ -561,12 +564,14 @@ function initSaisie(){
     const id = e.target.value;
     const mv = mouvements.find(m=>m.id===id);
     if(mv){
+      document.getElementById('s-unite').value = mv.unite;
+      basculerAffichageSerie();
       const soldes = calculerSoldes();
       document.getElementById('s-lignes').innerHTML='';
       mv.lignes.forEach(l=>{
         const rendu = (soldes[mv.id] && soldes[mv.id][l.materiel]) || 0;
         const solde = Number(l.quantite||0) - rendu;
-        if(solde>0) ajouterLigneSaisie(l.materiel, solde);
+        if(solde>0) ajouterLigneSaisie(l.materiel, solde, l.numeroSerie);
       });
     }
   });
@@ -637,18 +642,31 @@ function remplirRefSortie(){
   sel.innerHTML = '<option value="">— choisir —</option>' + options.map(m=>
     `<option value="${m.id}">${m.nom} — ${m.date} (${m.id})</option>`).join('');
 }
-function ajouterLigneSaisie(materielVal, qteVal){
+function ajouterLigneSaisie(materielVal, qteVal, serieVal){
   const wrap = document.getElementById('s-lignes');
   const div = document.createElement('div');
-  div.className='ligne-mat';
+  div.className='ligne-mat-wrap';
   const noms = nomsMateriels();
   const optionVide = `<option value="" ${materielVal?'':'selected'}>— Choisir —</option>`;
+  const afficherSerie = document.getElementById('s-unite').value === 'Armes de service';
   div.innerHTML = `
-    <div><label>Matériel</label><select class="s-mat">${optionVide}${noms.map(n=>`<option value="${n}" ${n===materielVal?'selected':''}>${n}</option>`).join('')}</select></div>
-    <div><label>Qté</label><input type="number" class="s-qte" min="0" value="${qteVal!==undefined?qteVal:1}"></div>
-    <button class="x-btn" onclick="this.parentElement.remove()">✕</button>
+    <div class="ligne-mat">
+      <div><label>Matériel</label><select class="s-mat">${optionVide}${noms.map(n=>`<option value="${n}" ${n===materielVal?'selected':''}>${n}</option>`).join('')}</select></div>
+      <div><label>Qté</label><input type="number" class="s-qte" min="0" value="${qteVal!==undefined?qteVal:1}"></div>
+      <button class="x-btn" onclick="this.closest('.ligne-mat-wrap').remove()">✕</button>
+    </div>
+    <div class="ligne-serie" style="display:${afficherSerie?'block':'none'};">
+      <label>N° de série (arme de service)</label>
+      <input type="text" class="s-serie" placeholder="ex: SN-001" value="${serieVal||''}">
+    </div>
   `;
   wrap.appendChild(div);
+}
+function basculerAffichageSerie(){
+  const afficher = document.getElementById('s-unite').value === 'Armes de service';
+  document.querySelectorAll('#s-lignes .ligne-serie').forEach(el=>{
+    el.style.display = afficher ? 'block' : 'none';
+  });
 }
 function enregistrerMouvement(){
   const date = document.getElementById('s-date').value;
@@ -665,12 +683,22 @@ function enregistrerMouvement(){
     alert('Choisis la référence du mouvement de sortie à solder.'); return;
   }
   const lignes = [];
-  document.querySelectorAll('#s-lignes .ligne-mat').forEach(div=>{
-    const mat = div.querySelector('.s-mat').value;
-    const qte = Number(div.querySelector('.s-qte').value);
-    if(mat && qte>0) lignes.push({materiel:mat, quantite:qte});
+  let serieManquante = false;
+  document.querySelectorAll('#s-lignes .ligne-mat-wrap').forEach(wrapDiv=>{
+    const mat = wrapDiv.querySelector('.s-mat').value;
+    const qte = Number(wrapDiv.querySelector('.s-qte').value);
+    if(mat && qte>0){
+      const ligne = {materiel:mat, quantite:qte};
+      if(unite==='Armes de service'){
+        const serie = (wrapDiv.querySelector('.s-serie').value||'').trim();
+        if(!serie) serieManquante = true;
+        ligne.numeroSerie = serie;
+      }
+      lignes.push(ligne);
+    }
   });
   if(lignes.length===0){ alert('Ajoute au moins un matériel avec sa quantité.'); return; }
+  if(serieManquante){ alert('Renseigne le numéro de série pour chaque arme de service.'); return; }
 
   const id = 'M' + (mouvements.length + 1) + '-' + Date.now().toString(36).slice(-4);
   mouvements.push({id, date, unite, type, grade, nom, refSortie:ref||null, lignes});
@@ -750,48 +778,6 @@ function supprimerMateriel(i){
   if(confirm('Supprimer cette ligne ?')){ materiels.splice(i,1); sauverTout(); rafraichirMateriel(); }
 }
 
-/* ----- Armes de service : attribution nominative (PA MASG1 uniquement) ----- */
-function rafraichirArmesNominatives(){
-  const liste = document.getElementById('armes-nominatives-liste');
-  const noms = Array.from(new Set(mouvements.map(m=>m.nom))).sort((a,b)=>a.localeCompare(b,'fr'));
-  if(armesNominatives.length===0){
-    liste.innerHTML = '<p class="vide" style="padding:4px 0;">Aucune arme enregistrée pour l\'instant.</p>';
-    return;
-  }
-  liste.innerHTML = armesNominatives.map((a,i)=>`
-    <div class="mat-card">
-      <div class="l1">
-        <input type="text" value="${a.serie}" placeholder="N° de série" onchange="armesNominatives[${i}].serie=this.value;sauverTout();">
-        <button class="x-btn" onclick="supprimerArmeNominative(${i})">✕</button>
-      </div>
-      <div class="l2" style="grid-template-columns:1fr;">
-        <div class="champ">
-          <label>Attribué à</label>
-          <input type="text" value="${a.attributaire||''}" placeholder="Nom du cadre" list="liste-noms-armes" onchange="armesNominatives[${i}].attributaire=this.value;sauverTout();">
-        </div>
-      </div>
-    </div>
-  `).join('') + `<datalist id="liste-noms-armes">${noms.map(n=>`<option value="${n}">`).join('')}</datalist>`;
-}
-function ajouterArmeNominative(){
-  armesNominatives.push({serie:'', attributaire:''});
-  sauverTout();
-  rafraichirArmesNominatives();
-  const cartes = document.querySelectorAll('#armes-nominatives-liste .mat-card');
-  const derniere = cartes[cartes.length-1];
-  if(derniere){
-    derniere.scrollIntoView({behavior:'smooth', block:'center'});
-    derniere.querySelector('.l1 input').focus();
-  }
-}
-function supprimerArmeNominative(i){
-  if(confirm('Supprimer cette arme du registre nominatif ?')){
-    armesNominatives.splice(i,1);
-    sauverTout();
-    rafraichirArmesNominatives();
-  }
-}
-
 /* ====================== REGISTRE ====================== */
 function toutesLesLignes(){
   const soldes = calculerSoldes();
@@ -804,7 +790,7 @@ function toutesLesLignes(){
         solde = Number(l.quantite||0) - rendu;
         statut = solde>0 ? 'Sortie' : 'Soldé';
       }
-      lignes.push({...m, materiel:l.materiel, quantite:l.quantite, rendu, solde, statut, ligneIndex:li});
+      lignes.push({...m, materiel:l.materiel, quantite:l.quantite, numeroSerie:l.numeroSerie, rendu, solde, statut, ligneIndex:li});
     });
   });
   lignes.sort((a,b)=> b.date.localeCompare(a.date));
@@ -831,7 +817,7 @@ function rafraichirRegistre(){
     <tr>
       <td>${l.date}</td><td>${l.unite}</td>
       <td><span class="badge ${l.type==='Sortie'?'sortie':'retour'}">${l.type}</span></td>
-      <td>${l.grade}</td><td>${l.nom}</td><td>${l.materiel}</td>
+      <td>${l.grade}</td><td>${l.nom}</td><td>${l.materiel}${l.numeroSerie?` <span style="color:var(--brique);font-size:11px;">(N° ${l.numeroSerie})</span>`:''}</td>
       <td>${l.quantite}</td><td>${l.rendu||0}</td>
       <td>${l.type==='Sortie'?l.solde:''}</td>
       <td>${l.statut==='Soldé'?`<span class="badge sortie">Soldé</span>`:l.type==='Sortie'?`<span class="badge rouge">En cours</span>`:''}</td>
@@ -882,6 +868,13 @@ function modifierLigne(mouvementId, ligneIndex){
   sel.innerHTML = nomsMateriels().map(n=>`<option value="${n}">${n}</option>`).join('');
   sel.value = mv.lignes[ligneIndex].materiel;
   document.getElementById('edit-quantite').value = mv.lignes[ligneIndex].quantite;
+  const serieWrap = document.getElementById('edit-serie-wrap');
+  if(mv.unite==='Armes de service'){
+    serieWrap.style.display = 'block';
+    document.getElementById('edit-serie').value = mv.lignes[ligneIndex].numeroSerie || '';
+  }else{
+    serieWrap.style.display = 'none';
+  }
   const panel = document.getElementById('edit-panel');
   panel.style.display = 'block';
   panel.scrollIntoView({behavior:'smooth', block:'center'});
@@ -894,17 +887,23 @@ function validerModifLigne(){
   const nouvelleQuantite = Number(document.getElementById('edit-quantite').value);
   if(!nouveauMateriel || !(nouvelleQuantite>0)){ alert('Matériel et quantité (>0) requis.'); return; }
   const ligne = mv.lignes[editEnCours.ligneIndex];
-  const ancienMateriel = ligne.materiel, ancienneQuantite = ligne.quantite;
-  if(ancienMateriel!==nouveauMateriel || ancienneQuantite!==nouvelleQuantite){
+  const ancienMateriel = ligne.materiel, ancienneQuantite = ligne.quantite, ancienneSerie = ligne.numeroSerie;
+  let nouvelleSerie = ancienneSerie;
+  if(mv.unite==='Armes de service'){
+    nouvelleSerie = document.getElementById('edit-serie').value.trim();
+    if(!nouvelleSerie){ alert('Le numéro de série est requis pour une arme de service.'); return; }
+  }
+  if(ancienMateriel!==nouveauMateriel || ancienneQuantite!==nouvelleQuantite || ancienneSerie!==nouvelleSerie){
     historique.push({
       date: new Date().toISOString(),
       mouvementId: mv.id, nom: mv.nom,
-      avant: `${ancienMateriel} × ${ancienneQuantite}`,
-      apres: `${nouveauMateriel} × ${nouvelleQuantite}`
+      avant: `${ancienMateriel} × ${ancienneQuantite}${ancienneSerie?' (N° '+ancienneSerie+')':''}`,
+      apres: `${nouveauMateriel} × ${nouvelleQuantite}${nouvelleSerie?' (N° '+nouvelleSerie+')':''}`
     });
   }
   ligne.materiel = nouveauMateriel;
   ligne.quantite = nouvelleQuantite;
+  if(mv.unite==='Armes de service') ligne.numeroSerie = nouvelleSerie;
   sauverTout();
   annulerModifLigne();
   rafraichirRegistre();
@@ -1115,26 +1114,28 @@ function verifierErreurs(){
     }
   });
 
-  // 5) Armes nominatives : numéro de série manquant, doublon, ou dépassement du stock déclaré
-  const seriesVues = {};
-  armesNominatives.forEach((a,i)=>{
-    if(!a.serie || !a.serie.trim()){
-      problemes.push(`⚠️ Arme nominative #${i+1} : numéro de série manquant.`);
+  // 5) Armes de service (attribution nominative) : n° de série manquant ou attribué à deux personnes à la fois
+  const encoursArmes = listeSortiesEnCours().filter(r=>{
+    const mv = mouvements.find(m=>m.id===r.mouvementId);
+    return mv && mv.unite==='Armes de service';
+  });
+  const seriesEnCours = {};
+  encoursArmes.forEach(r=>{
+    const mv = mouvements.find(m=>m.id===r.mouvementId);
+    const serie = mv.lignes[r.ligneIndex] ? mv.lignes[r.ligneIndex].numeroSerie : null;
+    if(!serie || !serie.trim()){
+      problemes.push(`⚠️ ${r.nom} — ${r.materiel} (mouvement ${r.mouvementId}) : numéro de série manquant.`);
     }else{
-      const cle = a.serie.trim().toLowerCase();
-      seriesVues[cle] = (seriesVues[cle]||0) + 1;
-    }
-    if(!a.attributaire || !a.attributaire.trim()){
-      problemes.push(`⚠️ Arme nominative "${a.serie||'(sans n° de série)'}" : pas d'attributaire renseigné.`);
+      const cle = serie.trim().toLowerCase();
+      if(!seriesEnCours[cle]) seriesEnCours[cle] = [];
+      seriesEnCours[cle].push(r.nom);
     }
   });
-  Object.entries(seriesVues).forEach(([serie,n])=>{
-    if(n>1) problemes.push(`⚠️ Le numéro de série "${serie}" est utilisé ${n} fois — vérifie qu'il n'y a pas de doublon.`);
+  Object.entries(seriesEnCours).forEach(([serie,attributaires])=>{
+    if(attributaires.length>1){
+      problemes.push(`⚠️ Le n° de série "${serie}" est attribué en même temps à plusieurs personnes : ${attributaires.join(', ')}.`);
+    }
   });
-  const stockArmeService = stockTotal('PA MASG1 - arme de service');
-  if(armesNominatives.length > stockArmeService){
-    problemes.push(`⚠️ ${armesNominatives.length} armes nominatives enregistrées, mais seulement ${stockArmeService} en stock pour "PA MASG1 - arme de service".`);
-  }
 
   const zone = document.getElementById('accueil-verif-resultats');
   zone.style.display = 'block';
