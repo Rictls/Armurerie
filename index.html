@@ -592,15 +592,15 @@ function modifierNomMateriel(i, input){
 }
 function ajouterLigneMateriel(){
   materiels.push({categorie:'matériels RGPL', materiel:'Nouveau matériel', quantite:0, hs:0});
+  const nouvelIndex = materiels.length - 1;
   sauverTout();
   document.getElementById('m-recherche').value='';
   rafraichirMateriel();
-  const cartes = document.querySelectorAll('.mat-card');
-  const derniere = cartes[cartes.length-1];
-  if(derniere){
-    derniere.scrollIntoView({behavior:'smooth', block:'center'});
-    derniere.style.outline = '2px solid var(--vert)';
-    const champNom = derniere.querySelector('.l1 input');
+  const nouvelleCarte = document.querySelector(`.mat-card[data-idx="${nouvelIndex}"]`);
+  if(nouvelleCarte){
+    nouvelleCarte.scrollIntoView({behavior:'smooth', block:'center'});
+    nouvelleCarte.style.outline = '2px solid var(--vert)';
+    const champNom = nouvelleCarte.querySelector('.l1 input');
     champNom.focus();
     champNom.select();
   }
