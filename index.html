@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1D4C3A">
+<title>Armurerie — Registre unique</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+:root{
+  --vert:#1D4C3A; --vert-clair:#E1F5EE; --creme:#F4E9E0; --brique:#8B3626;
+  --bg:#FAFAF7; --carte:#FFFFFF; --bordure:#E4E1D8; --texte:#22261F;
+  --texte-att:#5F5E5A; --rouge:#A32D2D; --rouge-bg:#FCEBEB; --vert-bg:#EAF3DE;
+}
+*{box-sizing:border-box;}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;background:var(--bg);color:var(--texte);padding-bottom:70px;}
+header{background:var(--vert);color:#fff;padding:14px 16px;position:sticky;top:0;z-index:10;}
+header h1{margin:0;font-size:17px;font-weight:600;}
+header p{margin:2px 0 0;font-size:12px;opacity:.85;}
+nav{display:flex;position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--bordure);z-index:10;}
+nav button{flex:1;background:none;border:none;padding:10px 4px 8px;font-size:11px;color:var(--texte-att);display:flex;flex-direction:column;align-items:center;gap:3px;}
+nav button.actif{color:var(--vert);font-weight:600;}
+nav button .ic{font-size:19px;}
+main{padding:14px;max-width:720px;margin:0 auto;}
+.page{display:none;}
+.page.actif{display:block;}
+h2{font-size:16px;margin:0 0 10px;}
+.carte{background:var(--carte);border:1px solid var(--bordure);border-radius:12px;padding:14px;margin-bottom:12px;}
+label{display:block;font-size:12px;font-weight:600;color:var(--texte-att);margin:10px 0 4px;}
+label:first-child{margin-top:0;}
+input,select{width:100%;padding:9px 10px;border:1px solid var(--bordure);border-radius:8px;font-size:15px;background:#fff;color:var(--texte);}
+input:focus,select:focus{outline:2px solid var(--vert);outline-offset:-1px;}
+.btn{display:inline-block;background:var(--vert);color:#fff;border:none;border-radius:8px;padding:11px 16px;font-size:14px;font-weight:600;text-align:center;width:100%;margin-top:12px;}
+.btn.secondaire{background:#fff;color:var(--vert);border:1px solid var(--vert);}
+.btn.danger{background:#fff;color:var(--rouge);border:1px solid var(--rouge);}
+.btn.petit{width:auto;padding:7px 12px;font-size:13px;margin-top:0;}
+.ligne-mat{display:grid;grid-template-columns:1fr 70px 32px;gap:6px;align-items:end;margin-bottom:8px;}
+.ligne-mat label{margin:0 0 3px;}
+.x-btn{background:var(--rouge-bg);color:var(--rouge);border:none;border-radius:8px;height:38px;font-size:16px;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th{text-align:left;padding:7px 6px;color:var(--texte-att);font-weight:600;border-bottom:1px solid var(--bordure);white-space:nowrap;}
+td{padding:7px 6px;border-bottom:1px solid var(--bordure);}
+.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+.badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:12px;font-weight:600;}
+.badge.sortie{background:var(--vert-bg);color:#3B6D11;}
+.badge.retour{background:var(--vert-clair);color:#0F6E56;}
+.badge.rouge{background:var(--rouge-bg);color:var(--rouge);}
+.filtre-bar{display:flex;gap:8px;margin-bottom:10px;overflow-x:auto;}
+.filtre-bar input,.filtre-bar select{width:auto;flex:1;min-width:110px;}
+.kpi-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px;}
+.kpi{background:var(--carte);border:1px solid var(--bordure);border-radius:12px;padding:12px;}
+.kpi select{margin-bottom:8px;font-size:12px;padding:6px 8px;}
+.kpi .lbl{font-size:11px;color:var(--texte-att);margin:0 0 2px;}
+.kpi .duo{display:flex;justify-content:space-between;}
+.kpi .val{font-size:22px;font-weight:600;color:var(--vert);}
+.kpi.alerte{background:var(--rouge-bg);}
+.kpi.alerte .lbl{color:var(--rouge);}
+.kpi.alerte .val{color:var(--rouge);font-size:26px;}
+.section-titre{font-size:13px;font-weight:600;color:var(--texte-att);text-transform:uppercase;letter-spacing:.03em;margin:18px 0 8px;}
+.accueil-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:8px;}
+.accueil-btn{background:var(--carte);border:1px solid var(--bordure);border-radius:14px;padding:20px 10px;font-size:13px;font-weight:600;color:var(--vert);text-align:center;line-height:1.4;}
+.accueil-btn .ic{display:block;font-size:28px;margin-bottom:8px;}
+.accueil-btn:active{background:var(--vert-bg);}
+.resume-ligne{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--bordure);font-size:14px;}
+.resume-ligne:last-child{border-bottom:none;}
+.resume-ligne .v{font-weight:600;}
+.vide{color:var(--texte-att);font-size:13px;padding:20px 0;text-align:center;}
+.note{font-size:12px;color:var(--texte-att);margin-top:6px;}
+.top-actions{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.icon-btn{background:none;border:1px solid var(--bordure);border-radius:8px;padding:6px 10px;font-size:13px;color:var(--texte-att);}
+.actions-bar{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
+.actions-bar .icon-btn{flex:1;min-width:100px;font-size:12px;padding:8px 6px;}
+.icon-btn.danger-txt{color:var(--rouge);border-color:var(--rouge-bg);}
+.dispo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;}
+.dispo-chip{border-radius:10px;padding:9px 10px;}
+.dispo-chip .nom{font-size:11px;font-weight:600;margin:0 0 4px;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.dispo-chip .n{font-size:19px;font-weight:600;}
+.dispo-chip.ok{background:var(--vert-bg);color:#27500A;}
+.dispo-chip.bas{background:#FAEEDA;color:#633806;}
+.dispo-chip.critique{background:var(--rouge-bg);color:var(--rouge);}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🛡️ Armurerie — Registre unique</h1>
+  <p>Application hors ligne — données stockées sur cet appareil</p>
+</header>
+
+<main>
+
+  <!-- ================= ACCUEIL ================= -->
+  <section id="page-accueil" class="page actif">
+    <h2>Accueil</h2>
+    <div class="accueil-grid">
+      <button class="accueil-btn" onclick="allerA('saisie')"><span class="ic">📝</span>Nouvelle perception<br>/ réintégration</button>
+      <button class="accueil-btn" onclick="allerA('materiel')"><span class="ic">📦</span>Voir le stock<br>matériel</button>
+      <button class="accueil-btn" onclick="allerA('registre')"><span class="ic">📋</span>Consulter le<br>registre</button>
+      <button class="accueil-btn" onclick="allerA('dashboard')"><span class="ic">📊</span>Tableau de bord</button>
+    </div>
+    <div class="section-titre">En un coup d'œil</div>
+    <div class="carte" id="accueil-resume"></div>
+  </section>
+
+  <!-- ================= SAISIE RAPIDE ================= -->
+  <section id="page-saisie" class="page">
+    <h2>Saisie rapide — Percevoir / Réintégrer</h2>
+    <div class="carte">
+      <label>Date</label>
+      <input type="date" id="s-date">
+
+      <label>Unité</label>
+      <select id="s-unite"></select>
+
+      <label>Type</label>
+      <select id="s-type">
+        <option value="Sortie">Sortie (perception)</option>
+        <option value="Retour">Retour (réintégration)</option>
+      </select>
+
+      <label>Grade</label>
+      <input type="text" id="s-grade" placeholder="ex: MJR">
+
+      <label>Nom</label>
+      <input type="text" id="s-nom" placeholder="ex: RAZA">
+
+      <div id="s-ref-wrap" style="display:none;">
+        <label>Réf. Sortie (mouvement d'origine)</label>
+        <select id="s-ref"></select>
+        <p class="note">En choisissant une référence, les lignes ci-dessous se remplissent automatiquement avec ce qui reste à rendre.</p>
+      </div>
+
+      <label style="margin-top:16px;">Matériel</label>
+      <div id="s-lignes"></div>
+      <button class="btn secondaire petit" onclick="ajouterLigneSaisie()">+ Ajouter une ligne</button>
+
+      <button class="btn" onclick="enregistrerMouvement()">Enregistrer</button>
+    </div>
+  </section>
+
+  <!-- ================= MATERIEL ================= -->
+  <section id="page-materiel" class="page">
+    <div class="top-actions">
+      <h2 style="margin:0;">Matériel — stock</h2>
+      <button class="icon-btn" onclick="ajouterLigneMateriel()">+ Ajouter</button>
+    </div>
+    <div class="carte">
+      <div class="tbl-wrap">
+        <table id="tbl-materiel">
+          <thead><tr><th>Catégorie</th><th>Matériel</th><th>Quantité</th><th>HS</th><th></th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= REGISTRE ================= -->
+  <section id="page-registre" class="page">
+    <h2>Registre unique de perception / réintégration</h2>
+    <div class="filtre-bar">
+      <select id="r-filtre-unite"><option value="">Toutes unités</option></select>
+      <select id="r-filtre-type"><option value="">Tout type</option><option value="Sortie">Sortie</option><option value="Retour">Retour</option></select>
+      <input type="text" id="r-filtre-nom" placeholder="Rechercher un nom...">
+    </div>
+    <div class="carte">
+      <div class="tbl-wrap">
+        <table id="tbl-registre">
+          <thead><tr><th>Date</th><th>Unité</th><th>Type</th><th>Grade</th><th>Nom</th><th>Matériel</th><th>Qté</th><th>Rendu</th><th>Solde</th><th>Statut</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= TABLEAU DE BORD ================= -->
+  <section id="page-dashboard" class="page">
+    <h2>Tableau de bord</h2>
+
+    <div class="kpi-grid">
+      <div class="kpi">
+        <select id="d-select-1" onchange="rafraichirDashboard()"></select>
+        <div class="duo">
+          <div><p class="lbl">Sorties</p><p class="val" id="d-sorties-1">0</p></div>
+          <div><p class="lbl">Disponible</p><p class="val" id="d-dispo-1">0</p></div>
+        </div>
+      </div>
+      <div class="kpi">
+        <select id="d-select-2" onchange="rafraichirDashboard()"></select>
+        <div class="duo">
+          <div><p class="lbl">Sorties</p><p class="val" id="d-sorties-2">0</p></div>
+          <div><p class="lbl">Disponible</p><p class="val" id="d-dispo-2">0</p></div>
+        </div>
+      </div>
+      <div class="kpi">
+        <select id="d-select-3" onchange="rafraichirDashboard()"></select>
+        <div class="duo">
+          <div><p class="lbl">Sorties</p><p class="val" id="d-sorties-3">0</p></div>
+          <div><p class="lbl">Disponible</p><p class="val" id="d-dispo-3">0</p></div>
+        </div>
+      </div>
+      <div class="kpi alerte">
+        <p class="lbl">Alertes (non restitué &gt; 7j)</p>
+        <p class="val" id="d-alertes">0</p>
+      </div>
+    </div>
+
+    <div class="actions-bar">
+      <button class="icon-btn" onclick="exporterJSON()">Exporter (.json)</button>
+      <button class="icon-btn danger-txt" onclick="reinitialiserRegistre()">Fin de stage</button>
+      <button class="icon-btn danger-txt" onclick="reinitialiser()">Réinit. tout</button>
+    </div>
+
+    <div class="section-titre">Disponibilités en un coup d'œil</div>
+    <div class="carte">
+      <div class="dispo-grid" id="dispo-grid"></div>
+    </div>
+
+    <div class="section-titre">Détail par matériel</div>
+    <div class="carte">
+      <div class="tbl-wrap">
+        <table id="tbl-detail">
+          <thead><tr><th>Matériel</th><th>Sorties</th><th>Disponible</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="section-titre">Sorties en cours</div>
+    <div class="carte">
+      <div class="tbl-wrap">
+        <table id="tbl-encours">
+          <thead><tr><th>Date</th><th>Unité</th><th>Nom</th><th>Matériel</th><th>Qté</th><th>Jours</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="section-titre">Matériels HS</div>
+    <div class="carte">
+      <div class="tbl-wrap">
+        <table id="tbl-hs">
+          <thead><tr><th>Catégorie</th><th>Matériel</th><th>Qté HS</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<nav>
+  <button class="actif" data-page="accueil" onclick="allerA('accueil')"><span class="ic">🏠</span>Accueil</button>
+  <button data-page="saisie" onclick="allerA('saisie')"><span class="ic">📝</span>Saisie</button>
+  <button data-page="materiel" onclick="allerA('materiel')"><span class="ic">📦</span>Matériel</button>
+  <button data-page="registre" onclick="allerA('registre')"><span class="ic">📋</span>Registre</button>
+  <button data-page="dashboard" onclick="allerA('dashboard')"><span class="ic">📊</span>Tableau de bord</button>
+</nav>
+
+<script>
+/* ====================== DONNEES ====================== */
+const UNITES = ['Peloton 1','Peloton 2','Peloton 3','Peloton 4','BLOC 2','Prêt MPI'];
+
+const SEED_MATERIELS = [{"categorie": "matériels RGPL", "materiel": "PA MASG1 - arme de service", "quantite": 8}, {"categorie": "matériels RGPL", "materiel": "MUNITIONS DE SERVICE", "quantite": 240}, {"categorie": "matériels RGPL", "materiel": "PA MASG1", "quantite": 62}, {"categorie": "matériels RGPL", "materiel": "ASSEMBLEUR DE STOCKAGE", "quantite": 62}, {"categorie": "matériels RGPL", "materiel": "CANON TIR RÉDUIT", "quantite": 10}, {"categorie": "matériels RGPL", "materiel": "CHARGEURS", "quantite": 140}, {"categorie": "matériels RGPL", "materiel": "CHARGETTE", "quantite": 2}, {"categorie": "matériels RGPL", "materiel": "PIE", "quantite": 7}, {"categorie": "matériels RGPL", "materiel": "CARTOUCHE PIE", "quantite": 144}, {"categorie": "matériels RGPL", "materiel": "MALLETTE DE TRANSPORT PIE", "quantite": 7}, {"categorie": "matériels RGPL", "materiel": "MUNITIONS INERTES", "quantite": 100}, {"categorie": "matériels RGPL", "materiel": "BOULETS EXERCICES / GRENADES A PLATRE", "quantite": 124}, {"categorie": "matériels RGPL", "materiel": "BPT", "quantite": 80}, {"categorie": "matériels RGPL", "materiel": "ETUIS BPT", "quantite": 80}, {"categorie": "matériels RGPL", "materiel": "TUBE À SABLE", "quantite": 3}, {"categorie": "matériels RGPL", "materiel": "ÉTUIS PA MAS G1 - DROITIER", "quantite": 70}, {"categorie": "matériels RGPL", "materiel": "ÉTUIS PA MAS G1 - GAUCHER", "quantite": 10}, {"categorie": "matériels RGPL", "materiel": "BLUE GUN - PA MAS G1", "quantite": 16}, {"categorie": "matériels RGPL", "materiel": "COUTEAUX - BLACK", "quantite": 10}, {"categorie": "matériels RGPL", "materiel": "BPT MOUSSE", "quantite": 34}, {"categorie": "matériels RGPL", "materiel": "MENOTTES Factices", "quantite": 60}, {"categorie": "matériels RGPL", "materiel": "BAGS", "quantite": 19}, {"categorie": "matériels RGPL", "materiel": "GPBI", "quantite": 10}, {"categorie": "matériels RGPL", "materiel": "lot SECOURISME", "quantite": 3}, {"categorie": "matériels RGPL", "materiel": "DRAPEAU TRICOLORE", "quantite": 1}, {"categorie": "matériels RGPL", "materiel": "CANTINE TIR", "quantite": 1}, {"categorie": "matériels RGPL", "materiel": "ENROULEUR ELECTRIQUE", "quantite": 1}, {"categorie": "matériels RGPL", "materiel": "COUVERTURE", "quantite": 6}, {"categorie": "matériels CRI", "materiel": "MUNITIONS INERTES", "quantite": 80}, {"categorie": "matériels CRI", "materiel": "BLUE GUN - PA MAS G1", "quantite": 3}, {"categorie": "matériels CRI", "materiel": "RED GUN - SIG PRO", "quantite": 30}, {"categorie": "matériels CRI", "materiel": "BAGS", "quantite": 10}];
+const SEED_MOUVEMENTS = [{"id": "M1", "date": "2026-07-18", "unite": "Peloton 1", "type": "Sortie", "grade": "MJR", "nom": "RAZA", "refSortie": null, "lignes": [{"materiel": "PA MASG1", "quantite": 6}, {"materiel": "MENOTTES Factices", "quantite": 10}, {"materiel": "BPT", "quantite": 20}, {"materiel": "BLUE GUN - PA MAS G1", "quantite": 14}]}, {"id": "M2", "date": "2026-07-18", "unite": "Peloton 2", "type": "Sortie", "grade": "MJR", "nom": "BROSSET", "refSortie": null, "lignes": [{"materiel": "PA MASG1", "quantite": 22}, {"materiel": "CHARGEURS", "quantite": 22}, {"materiel": "MUNITIONS INERTES", "quantite": 50}, {"materiel": "CHARGETTE", "quantite": 1}]}, {"id": "M3", "date": "2026-07-18", "unite": "Peloton 3", "type": "Sortie", "grade": "mjr", "nom": "vie", "refSortie": null, "lignes": [{"materiel": "PA MASG1", "quantite": 23}, {"materiel": "CHARGEURS", "quantite": 23}, {"materiel": "MUNITIONS INERTES", "quantite": 50}, {"materiel": "BPT", "quantite": 23}, {"materiel": "MENOTTES Factices", "quantite": 12}, {"materiel": "ASSEMBLEUR DE STOCKAGE", "quantite": 12}, {"materiel": "COUTEAUX - BLACK", "quantite": 2}]}];
+
+let materiels = charger('am_materiels', SEED_MATERIELS);
+let mouvements = charger('am_mouvements', SEED_MOUVEMENTS);
+
+function charger(cle, defaut){
+  try{
+    const v = localStorage.getItem(cle);
+    if(v) return JSON.parse(v);
+  }catch(e){}
+  sauvegarder(cle, defaut);
+  return defaut;
+}
+function sauvegarder(cle, valeur){
+  try{ localStorage.setItem(cle, JSON.stringify(valeur)); }
+  catch(e){ console.warn('Stockage local indisponible — les données ne persisteront pas.', e); }
+}
+function sauverTout(){ sauvegarder('am_materiels', materiels); sauvegarder('am_mouvements', mouvements); }
+
+function nomsMateriels(){
+  const set = new Set();
+  materiels.forEach(m => set.add(m.materiel));
+  return Array.from(set).sort();
+}
+function stockTotal(nom){
+  return materiels.filter(m => m.materiel === nom).reduce((s,m)=>s+Number(m.quantite||0),0);
+}
+function hsTotal(nom){
+  return materiels.filter(m => m.materiel === nom).reduce((s,m)=>s+Number(m.hs||0),0);
+}
+
+/* Pour chaque mouvement Sortie, calcule ce qui a été rendu via les mouvements Retour qui le référencent */
+function calculerSoldes(){
+  const soldes = {}; // mouvementId -> {materiel: renduQty}
+  mouvements.forEach(m=>{
+    if(m.type==='Retour' && m.refSortie){
+      if(!soldes[m.refSortie]) soldes[m.refSortie] = {};
+      m.lignes.forEach(l=>{
+        soldes[m.refSortie][l.materiel] = (soldes[m.refSortie][l.materiel]||0) + Number(l.quantite||0);
+      });
+    }
+  });
+  return soldes;
+}
+
+function enCoursParMateriel(){
+  const soldes = calculerSoldes();
+  const res = {};
+  mouvements.forEach(m=>{
+    if(m.type==='Sortie'){
+      m.lignes.forEach(l=>{
+        const rendu = (soldes[m.id] && soldes[m.id][l.materiel]) || 0;
+        const solde = Number(l.quantite||0) - rendu;
+        if(solde>0) res[l.materiel] = (res[l.materiel]||0) + solde;
+      });
+    }
+  });
+  return res;
+}
+
+function listeSortiesEnCours(){
+  const soldes = calculerSoldes();
+  const rows = [];
+  mouvements.forEach(m=>{
+    if(m.type==='Sortie'){
+      m.lignes.forEach(l=>{
+        const rendu = (soldes[m.id] && soldes[m.id][l.materiel]) || 0;
+        const solde = Number(l.quantite||0) - rendu;
+        if(solde>0) rows.push({date:m.date, unite:m.unite, nom:m.nom, materiel:l.materiel, quantite:solde, mouvementId:m.id});
+      });
+    }
+  });
+  rows.sort((a,b)=> a.date.localeCompare(b.date));
+  return rows;
+}
+
+/* ====================== NAVIGATION ====================== */
+function allerA(page){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('actif'));
+  document.getElementById('page-'+page).classList.add('actif');
+  document.querySelectorAll('nav button').forEach(b=>b.classList.remove('actif'));
+  const navBtn = document.querySelector('nav button[data-page="'+page+'"]');
+  if(navBtn) navBtn.classList.add('actif');
+  if(page==='accueil') rafraichirAccueil();
+  if(page==='materiel') rafraichirMateriel();
+  if(page==='registre') rafraichirRegistre();
+  if(page==='dashboard') rafraichirDashboard();
+}
+function rafraichirAccueil(){
+  const enCours = enCoursParMateriel();
+  const totalEnCours = Object.values(enCours).reduce((a,b)=>a+b,0);
+  const encoursListe = listeSortiesEnCours();
+  const auj = new Date();
+  const alertes = encoursListe.filter(r=> Math.floor((auj-new Date(r.date))/86400000) > 7).length;
+  document.getElementById('accueil-resume').innerHTML = `
+    <div class="resume-ligne"><span>Mouvements enregistrés</span><span class="v">${mouvements.length}</span></div>
+    <div class="resume-ligne"><span>Lignes actuellement sorties</span><span class="v">${encoursListe.length}</span></div>
+    <div class="resume-ligne"><span>Quantité totale en perception</span><span class="v">${totalEnCours}</span></div>
+    <div class="resume-ligne"><span>Alertes (non restitué &gt; 7j)</span><span class="v" style="color:${alertes>0?'var(--rouge)':'inherit'}">${alertes}</span></div>
+  `;
+}
+
+/* ====================== SAISIE RAPIDE ====================== */
+function remplirSelectUnites(sel){
+  sel.innerHTML = UNITES.map(u=>`<option value="${u}">${u}</option>`).join('');
+}
+function initSaisie(){
+  document.getElementById('s-date').value = new Date().toISOString().slice(0,10);
+  remplirSelectUnites(document.getElementById('s-unite'));
+  document.getElementById('s-type').addEventListener('change', e=>{
+    document.getElementById('s-ref-wrap').style.display = e.target.value==='Retour' ? 'block' : 'none';
+    if(e.target.value==='Retour') remplirRefSortie();
+  });
+  document.getElementById('s-ref').addEventListener('change', e=>{
+    const id = e.target.value;
+    const mv = mouvements.find(m=>m.id===id);
+    if(mv){
+      const soldes = calculerSoldes();
+      document.getElementById('s-lignes').innerHTML='';
+      mv.lignes.forEach(l=>{
+        const rendu = (soldes[mv.id] && soldes[mv.id][l.materiel]) || 0;
+        const solde = Number(l.quantite||0) - rendu;
+        if(solde>0) ajouterLigneSaisie(l.materiel, solde);
+      });
+    }
+  });
+  ajouterLigneSaisie();
+}
+function remplirRefSortie(){
+  const sel = document.getElementById('s-ref');
+  const soldes = calculerSoldes();
+  const options = mouvements.filter(m=>{
+    if(m.type!=='Sortie') return false;
+    return m.lignes.some(l=>{
+      const rendu=(soldes[m.id]&&soldes[m.id][l.materiel])||0;
+      return Number(l.quantite||0)-rendu>0;
+    });
+  });
+  sel.innerHTML = '<option value="">— choisir —</option>' + options.map(m=>
+    `<option value="${m.id}">${m.id} — ${m.nom} (${m.date})</option>`).join('');
+}
+function ajouterLigneSaisie(materielVal, qteVal){
+  const wrap = document.getElementById('s-lignes');
+  const div = document.createElement('div');
+  div.className='ligne-mat';
+  const noms = nomsMateriels();
+  div.innerHTML = `
+    <div><label>Matériel</label><select class="s-mat">${noms.map(n=>`<option value="${n}" ${n===materielVal?'selected':''}>${n}</option>`).join('')}</select></div>
+    <div><label>Qté</label><input type="number" class="s-qte" min="0" value="${qteVal||''}"></div>
+    <button class="x-btn" onclick="this.parentElement.remove()">✕</button>
+  `;
+  wrap.appendChild(div);
+}
+function enregistrerMouvement(){
+  const date = document.getElementById('s-date').value;
+  const unite = document.getElementById('s-unite').value;
+  const type = document.getElementById('s-type').value;
+  const grade = document.getElementById('s-grade').value.trim();
+  const nom = document.getElementById('s-nom').value.trim();
+  const ref = type==='Retour' ? document.getElementById('s-ref').value : '';
+
+  if(!date || !unite || !grade || !nom){
+    alert('Renseigne Date, Unité, Grade et Nom.'); return;
+  }
+  if(type==='Retour' && !ref){
+    alert('Choisis la référence du mouvement de sortie à solder.'); return;
+  }
+  const lignes = [];
+  document.querySelectorAll('#s-lignes .ligne-mat').forEach(div=>{
+    const mat = div.querySelector('.s-mat').value;
+    const qte = Number(div.querySelector('.s-qte').value);
+    if(mat && qte>0) lignes.push({materiel:mat, quantite:qte});
+  });
+  if(lignes.length===0){ alert('Ajoute au moins un matériel avec sa quantité.'); return; }
+
+  const id = 'M' + (mouvements.length + 1) + '-' + Date.now().toString(36).slice(-4);
+  mouvements.push({id, date, unite, type, grade, nom, refSortie:ref||null, lignes});
+  sauverTout();
+  rafraichirAccueil();
+  rafraichirDashboard();
+
+  document.getElementById('s-lignes').innerHTML='';
+  document.getElementById('s-grade').value='';
+  document.getElementById('s-nom').value='';
+  document.getElementById('s-ref-wrap').style.display='none';
+  document.getElementById('s-type').value='Sortie';
+  ajouterLigneSaisie();
+  alert(lignes.length + ' ligne(s) enregistrée(s) dans le Registre.');
+}
+
+/* ====================== MATERIEL ====================== */
+function rafraichirMateriel(){
+  const cats = ['matériels RGPL','Matériels 72-49-85','matériels CRI'];
+  const tbody = document.querySelector('#tbl-materiel tbody');
+  tbody.innerHTML = materiels.map((m,i)=>`
+    <tr>
+      <td><select onchange="materiels[${i}].categorie=this.value;sauverTout();">
+        ${cats.map(c=>`<option value="${c}" ${c===m.categorie?'selected':''}>${c}</option>`).join('')}
+      </select></td>
+      <td><input type="text" value="${m.materiel}" onchange="materiels[${i}].materiel=this.value;sauverTout();"></td>
+      <td><input type="number" value="${m.quantite}" style="width:70px" onchange="materiels[${i}].quantite=Number(this.value);sauverTout();rafraichirMateriel();"></td>
+      <td><input type="number" value="${m.hs||0}" style="width:60px;color:var(--rouge);" onchange="materiels[${i}].hs=Number(this.value);sauverTout();rafraichirMateriel();"></td>
+      <td><button class="x-btn" onclick="supprimerMateriel(${i})">✕</button></td>
+    </tr>`).join('');
+}
+function ajouterLigneMateriel(){
+  materiels.push({categorie:'matériels RGPL', materiel:'Nouveau matériel', quantite:0, hs:0});
+  sauverTout(); rafraichirMateriel();
+}
+function supprimerMateriel(i){
+  if(confirm('Supprimer cette ligne ?')){ materiels.splice(i,1); sauverTout(); rafraichirMateriel(); }
+}
+
+/* ====================== REGISTRE ====================== */
+function toutesLesLignes(){
+  const soldes = calculerSoldes();
+  const lignes = [];
+  mouvements.forEach(m=>{
+    m.lignes.forEach(l=>{
+      let rendu=0, solde=0, statut=m.type;
+      if(m.type==='Sortie'){
+        rendu = (soldes[m.id] && soldes[m.id][l.materiel]) || 0;
+        solde = Number(l.quantite||0) - rendu;
+        statut = solde>0 ? 'Sortie' : 'Soldé';
+      }
+      lignes.push({...m, materiel:l.materiel, quantite:l.quantite, rendu, solde, statut});
+    });
+  });
+  lignes.sort((a,b)=> b.date.localeCompare(a.date));
+  return lignes;
+}
+function rafraichirRegistre(){
+  const selU = document.getElementById('r-filtre-unite');
+  if(selU.options.length<=1) selU.innerHTML='<option value="">Toutes unités</option>'+UNITES.map(u=>`<option value="${u}">${u}</option>`).join('');
+
+  const fu = document.getElementById('r-filtre-unite').value;
+  const ft = document.getElementById('r-filtre-type').value;
+  const fn = document.getElementById('r-filtre-nom').value.toLowerCase();
+
+  let lignes = toutesLesLignes();
+  if(fu) lignes = lignes.filter(l=>l.unite===fu);
+  if(ft) lignes = lignes.filter(l=>l.type===ft);
+  if(fn) lignes = lignes.filter(l=>l.nom.toLowerCase().includes(fn));
+
+  const tbody = document.querySelector('#tbl-registre tbody');
+  if(lignes.length===0){ tbody.innerHTML = '<tr><td colspan="10" class="vide">Aucun mouvement</td></tr>'; return; }
+  tbody.innerHTML = lignes.map(l=>`
+    <tr>
+      <td>${l.date}</td><td>${l.unite}</td>
+      <td><span class="badge ${l.type==='Sortie'?'sortie':'retour'}">${l.type}</span></td>
+      <td>${l.grade}</td><td>${l.nom}</td><td>${l.materiel}</td>
+      <td>${l.quantite}</td><td>${l.rendu||0}</td>
+      <td>${l.type==='Sortie'?l.solde:''}</td>
+      <td>${l.statut==='Soldé'?`<span class="badge sortie">Soldé</span>`:l.type==='Sortie'?`<span class="badge rouge">En cours</span>`:''}</td>
+    </tr>`).join('');
+}
+
+/* ====================== TABLEAU DE BORD ====================== */
+function initDashboardSelects(){
+  const noms = nomsMateriels();
+  ['d-select-1','d-select-2','d-select-3'].forEach((id,i)=>{
+    const sel = document.getElementById(id);
+    sel.innerHTML = noms.map(n=>`<option value="${n}">${n}</option>`).join('');
+  });
+  if(noms.includes('PA MASG1')) document.getElementById('d-select-1').value='PA MASG1';
+  if(noms.includes('PIE')) document.getElementById('d-select-2').value='PIE';
+  if(noms.length>2) document.getElementById('d-select-3').value=noms[2];
+}
+function rafraichirDashboard(){
+  const enCours = enCoursParMateriel();
+  [1,2,3].forEach(i=>{
+    const mat = document.getElementById('d-select-'+i).value;
+    const sorties = enCours[mat] || 0;
+    const dispo = stockTotal(mat) - sorties - hsTotal(mat);
+    document.getElementById('d-sorties-'+i).textContent = sorties;
+    document.getElementById('d-dispo-'+i).textContent = dispo;
+  });
+
+  const encoursListe = listeSortiesEnCours();
+  const auj = new Date();
+  const alertes = encoursListe.filter(r=>{
+    const d = new Date(r.date);
+    const jours = Math.floor((auj-d)/86400000);
+    return jours>7;
+  }).length;
+  document.getElementById('d-alertes').textContent = alertes;
+
+  const tbodyD = document.querySelector('#tbl-detail tbody');
+  const noms = nomsMateriels();
+  const detail = noms.map(n=>{
+    const s = enCours[n]||0;
+    const stock = stockTotal(n);
+    const hs = hsTotal(n);
+    const d = stock-s-hs;
+    return {nom:n, sorties:s, dispo:d, stock, hs};
+  });
+  tbodyD.innerHTML = detail.map(x=>`<tr><td>${x.nom}</td><td>${x.sorties}</td><td>${x.dispo}${x.hs>0?` <span class="badge rouge">${x.hs} HS</span>`:''}</td></tr>`).join('');
+
+  const grille = document.getElementById('dispo-grid');
+  const trie = [...detail].sort((a,b)=> a.dispo - b.dispo);
+  grille.innerHTML = trie.map(x=>{
+    let classe = 'ok';
+    if(x.dispo<=0) classe='critique';
+    else if(x.stock>0 && x.dispo/x.stock < 0.3) classe='bas';
+    return `<div class="dispo-chip ${classe}"><p class="nom">${x.nom}</p><p class="n">${x.dispo}</p></div>`;
+  }).join('');
+
+  const tbodyE = document.querySelector('#tbl-encours tbody');
+  if(encoursListe.length===0){ tbodyE.innerHTML='<tr><td colspan="6" class="vide">Aucune sortie en cours</td></tr>'; }
+  else{
+    tbodyE.innerHTML = encoursListe.map(r=>{
+      const jours = Math.floor((auj-new Date(r.date))/86400000);
+      return `<tr ${jours>7?'style="background:var(--rouge-bg)"':''}>
+        <td>${r.date}</td><td>${r.unite}</td><td>${r.nom}</td><td>${r.materiel}</td><td>${r.quantite}</td><td>${jours}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  const hsLignes = materiels.filter(m => Number(m.hs||0) > 0);
+  const tbodyHS = document.querySelector('#tbl-hs tbody');
+  if(hsLignes.length===0){ tbodyHS.innerHTML='<tr><td colspan="3" class="vide">Aucun matériel HS</td></tr>'; }
+  else{
+    tbodyHS.innerHTML = hsLignes.map(m=>`
+      <tr><td>${m.categorie}</td><td>${m.materiel}</td><td><span class="badge rouge">${m.hs}</span></td></tr>
+    `).join('');
+  }
+}
+
+/* ====================== OUTILS ====================== */
+function exporterJSON(){
+  const data = {materiels, mouvements, exporte:new Date().toISOString()};
+  const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'armurerie-export-'+new Date().toISOString().slice(0,10)+'.json';
+  a.click();
+}
+function reinitialiserRegistre(){
+  if(confirm('Fin de stage : effacer toutes les perceptions/retours du registre ? La liste des matériels et leurs quantités sont conservées.')){
+    mouvements = [];
+    sauverTout();
+    rafraichirAccueil();
+    rafraichirDashboard();
+    rafraichirRegistre();
+    alert('Registre réinitialisé — prêt pour le prochain stage.');
+  }
+}
+function reinitialiser(){
+  if(confirm('Cela efface toutes les données locales (matériel et registre). Continuer ?')){
+    try{
+      localStorage.removeItem('am_materiels');
+      localStorage.removeItem('am_mouvements');
+    }catch(e){}
+    location.reload();
+  }
+}
+
+/* ====================== DEMARRAGE ====================== */
+initSaisie();
+initDashboardSelects();
+rafraichirAccueil();
+document.getElementById('r-filtre-unite').addEventListener('change', rafraichirRegistre);
+document.getElementById('r-filtre-type').addEventListener('change', rafraichirRegistre);
+document.getElementById('r-filtre-nom').addEventListener('input', rafraichirRegistre);
+
+if('serviceWorker' in navigator){
+  window.addEventListener('load', ()=>{
+    navigator.serviceWorker.register('sw.js').catch(()=>{});
+  });
+}
+</script>
+</body>
+</html>
