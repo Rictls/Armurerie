@@ -167,6 +167,10 @@ td{padding:7px 6px;border-bottom:1px solid var(--bordure);}
   <section id="page-reintegration" class="page">
     <h2>Réintégration</h2>
     <p class="note" style="margin-top:-6px;">Coche les lignes ramenées, puis valide. La date de perception est indiquée pour recouper avec le bon papier.</p>
+    <div class="filtre-bar">
+      <select id="reint-filtre-unite"><option value="">Toutes unités</option></select>
+      <select id="reint-filtre-nom"><option value="">Tous les noms</option></select>
+    </div>
     <div id="reint-liste"></div>
     <button class="btn" id="reint-valider" onclick="validerReintegration()" style="position:sticky;bottom:60px;">Valider la réintégration (0)</button>
   </section>
@@ -333,6 +337,7 @@ td{padding:7px 6px;border-bottom:1px solid var(--bordure);}
 <nav>
   <button class="actif" data-page="accueil" onclick="allerA('accueil')"><span class="ic">🏠</span>Accueil</button>
   <button data-page="saisie" onclick="allerA('saisie')"><span class="ic">📝</span>Saisie</button>
+  <button data-page="reintegration" onclick="allerA('reintegration')"><span class="ic">↩️</span>Réintègre</button>
   <button data-page="materiel" onclick="allerA('materiel')"><span class="ic">📦</span>Matériel</button>
   <button data-page="registre" onclick="allerA('registre')"><span class="ic">📋</span>Registre</button>
   <button data-page="dashboard" onclick="allerA('dashboard')"><span class="ic">📊</span>Tableau de bord</button>
@@ -509,10 +514,25 @@ function rechercheAccueil(){
   zone.innerHTML = html || '<p class="vide" style="padding:4px 0;">Aucun résultat</p>';
 }
 function rafraichirReintegration(){
-  const encours = listeSortiesEnCours();
+  const encoursTotal = listeSortiesEnCours();
   const zone = document.getElementById('reint-liste');
+
+  const selUnite = document.getElementById('reint-filtre-unite');
+  const selNom = document.getElementById('reint-filtre-nom');
+  const uniteVal = selUnite.value;
+  const nomVal = selNom.value;
+
+  const unitesDispo = Array.from(new Set(encoursTotal.map(r=>r.unite))).sort((a,b)=>a.localeCompare(b,'fr'));
+  if(selUnite.options.length-1 !== unitesDispo.length || uniteVal===''){
+    selUnite.innerHTML = '<option value="">Toutes unités</option>' + unitesDispo.map(u=>`<option value="${u}" ${u===uniteVal?'selected':''}>${u}</option>`).join('');
+  }
+  const nomsDispo = Array.from(new Set(encoursTotal.filter(r=>!uniteVal||r.unite===uniteVal).map(r=>r.nom))).sort((a,b)=>a.localeCompare(b,'fr'));
+  selNom.innerHTML = '<option value="">Tous les noms</option>' + nomsDispo.map(n=>`<option value="${n}" ${n===nomVal?'selected':''}>${n}</option>`).join('');
+
+  const encours = encoursTotal.filter(r => (!uniteVal || r.unite===uniteVal) && (!nomVal || r.nom===nomVal));
+
   if(encours.length===0){
-    zone.innerHTML = '<p class="vide">Aucune sortie en cours à réintégrer.</p>';
+    zone.innerHTML = '<p class="vide">Aucune sortie en cours' + (uniteVal||nomVal?' pour ce filtre':' à réintégrer') + '.</p>';
     document.getElementById('reint-valider').textContent = 'Valider la réintégration (0)';
     return;
   }
@@ -1373,6 +1393,8 @@ document.getElementById('r-filtre-unite').addEventListener('change', rafraichirR
 document.getElementById('r-filtre-type').addEventListener('change', rafraichirRegistre);
 document.getElementById('r-filtre-nom').addEventListener('input', rafraichirRegistre);
 document.getElementById('r-groupe').addEventListener('change', rafraichirRegistre);
+document.getElementById('reint-filtre-unite').addEventListener('change', ()=>{ document.getElementById('reint-filtre-nom').value=''; rafraichirReintegration(); });
+document.getElementById('reint-filtre-nom').addEventListener('change', rafraichirReintegration);
 document.getElementById('m-recherche').addEventListener('input', rafraichirMateriel);
 document.getElementById('a-recherche').addEventListener('input', rechercheAccueil);
 
