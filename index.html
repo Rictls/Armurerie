@@ -140,7 +140,8 @@ td{padding:7px 6px;border-bottom:1px solid var(--bordure);}
       <button class="accueil-btn" onclick="allerA('reintegration')"><span class="ic">↩️</span>Réintégration</button>
       <button class="accueil-btn" onclick="allerA('materiel')"><span class="ic">📦</span>Voir le stock<br>matériel</button>
       <button class="accueil-btn" onclick="allerA('registre')"><span class="ic">📋</span>Consulter le<br>registre</button>
-      <button class="accueil-btn" style="grid-column:1 / span 2;" onclick="allerA('dashboard')"><span class="ic">📊</span>Tableau de bord</button>
+      <button class="accueil-btn" onclick="allerA('resume')"><span class="ic">💬</span>Résumé</button>
+      <button class="accueil-btn" onclick="allerA('dashboard')"><span class="ic">📊</span>Tableau de bord</button>
     </div>
 
     <p id="a-derniere-sauvegarde" class="note" style="margin:2px 0 0;"></p>
@@ -226,6 +227,38 @@ td{padding:7px 6px;border-bottom:1px solid var(--bordure);}
   </section>
 
   <!-- ================= MATERIEL ================= -->
+  <!-- ================= RESUME ================= -->
+  <section id="page-resume" class="page">
+    <h2>Résumé</h2>
+
+    <label>Mode</label>
+    <select id="res-mode">
+      <option value="individuel">Individuel — une personne</option>
+      <option value="groupe">Groupé — une unité (ou toutes)</option>
+    </select>
+
+    <div id="res-champ-individuel">
+      <label>Personne</label>
+      <select id="res-nom"></select>
+    </div>
+    <div id="res-champ-groupe" style="display:none;">
+      <label>Unité</label>
+      <select id="res-unite"><option value="">Toutes les unités</option></select>
+    </div>
+
+    <button class="btn secondaire" style="margin-top:14px;" onclick="genererResume()">Générer le texte</button>
+
+    <div id="res-resultat" style="display:none;">
+      <label style="margin-top:16px;">Texte généré</label>
+      <textarea id="res-texte" rows="10" style="width:100%;padding:10px;border:1px solid var(--bordure);border-radius:8px;font-size:14px;font-family:inherit;"></textarea>
+      <div style="display:flex;gap:8px;margin-top:10px;">
+        <button class="btn" style="margin-top:0;flex:1;" onclick="copierResume()">📋 Copier</button>
+        <button class="btn secondaire" style="margin-top:0;flex:1;" onclick="exporterResumePDF()">📄 PDF</button>
+      </div>
+      <button class="btn secondaire" style="margin-top:8px;" onclick="partagerResume()">📤 Partager (SMS, WhatsApp, Mail...)</button>
+    </div>
+  </section>
+
   <section id="page-materiel" class="page">
     <div class="top-actions">
       <h2 style="margin:0;">Matériel — stock</h2>
@@ -449,6 +482,7 @@ function allerA(page){
   if(page==='accueil') rafraichirAccueil();
   if(page==='materiel') rafraichirMateriel();
   if(page==='reintegration') rafraichirReintegration();
+  if(page==='resume') initResume();
   if(page==='registre') rafraichirRegistre();
   if(page==='dashboard') rafraichirDashboard();
 }
@@ -598,6 +632,107 @@ function validerReintegration(){
   alert(coches.length + ' ligne(s) réintégrée(s).');
   allerA('accueil');
 }
+/* ====================== RESUME ====================== */
+function initResume(){
+  const encours = listeSortiesEnCours();
+  const noms = Array.from(new Set(encours.map(r=>r.nom))).sort((a,b)=>a.localeCompare(b,'fr'));
+  const unites = Array.from(new Set(encours.map(r=>r.unite))).sort((a,b)=>a.localeCompare(b,'fr'));
+
+  const selNom = document.getElementById('res-nom');
+  selNom.innerHTML = noms.length
+    ? noms.map(n=>`<option value="${n}">${n}</option>`).join('')
+    : '<option value="">Aucune personne avec du matériel en cours</option>';
+
+  const selUnite = document.getElementById('res-unite');
+  selUnite.innerHTML = '<option value="">Toutes les unités</option>' + unites.map(u=>`<option value="${u}">${u}</option>`).join('');
+
+  document.getElementById('res-resultat').style.display = 'none';
+
+  const modeSel = document.getElementById('res-mode');
+  modeSel.onchange = ()=>{
+    const groupe = modeSel.value === 'groupe';
+    document.getElementById('res-champ-individuel').style.display = groupe ? 'none' : 'block';
+    document.getElementById('res-champ-groupe').style.display = groupe ? 'block' : 'none';
+    document.getElementById('res-resultat').style.display = 'none';
+  };
+}
+
+/* Regroupe et cumule le matériel actuellement détenu par une personne,
+   trié par ordre alphabétique. */
+function materielDetenuParPersonne(nom){
+  const encours = listeSortiesEnCours().filter(r=>r.nom===nom);
+  const cumul = {};
+  encours.forEach(r=>{ cumul[r.materiel] = (cumul[r.materiel]||0) + r.quantite; });
+  const lignes = Object.keys(cumul).sort((a,b)=>a.localeCompare(b,'fr')).map(m=>({materiel:m, quantite:cumul[m]}));
+  const dernier = encours.sort((a,b)=>b.date.localeCompare(a.date))[0];
+  const mvDernier = dernier ? mouvements.find(m=>m.id===dernier.mouvementId) : null;
+  return {lignes, grade: mvDernier ? mvDernier.grade : '', unite: dernier ? dernier.unite : ''};
+}
+function blocIndividuel(nom){
+  const info = materielDetenuParPersonne(nom);
+  if(info.lignes.length===0) return '';
+  const dateJour = new Date().toLocaleDateString('fr-FR');
+  let texte = `${info.grade} ${nom} (${info.unite})\n`;
+  texte += `Matériel en votre possession au ${dateJour} :\n`;
+  info.lignes.forEach(l=>{ texte += `- ${l.materiel} : ${l.quantite}\n`; });
+  texte += `Merci de le restituer dès que possible.`;
+  return texte;
+}
+function genererResume(){
+  const mode = document.getElementById('res-mode').value;
+  let texte = '';
+  if(mode==='individuel'){
+    const nom = document.getElementById('res-nom').value;
+    if(!nom){ alert('Choisis une personne.'); return; }
+    texte = blocIndividuel(nom);
+  }else{
+    const uniteChoisie = document.getElementById('res-unite').value;
+    const encours = listeSortiesEnCours().filter(r => !uniteChoisie || r.unite===uniteChoisie);
+    const noms = Array.from(new Set(encours.map(r=>r.nom))).sort((a,b)=>a.localeCompare(b,'fr'));
+    if(noms.length===0){ alert('Aucune personne avec du matériel en cours pour ce filtre.'); return; }
+    texte = noms.map(n=>blocIndividuel(n)).filter(Boolean).join('\n\n');
+  }
+  document.getElementById('res-texte').value = texte;
+  document.getElementById('res-resultat').style.display = 'block';
+}
+function partagerResume(){
+  const texte = document.getElementById('res-texte').value;
+  if(!texte){ alert('Génère d\'abord le texte.'); return; }
+  if(navigator.share){
+    navigator.share({ text: texte }).catch(()=>{ /* annulé par l'utilisateur, rien à faire */ });
+  }else{
+    alert('Le partage direct n\'est disponible qu\'une fois l\'appli en ligne (https://), pas en test local. Utilise "Copier" en attendant.');
+  }
+}
+function copierResume(){
+  const zone = document.getElementById('res-texte');
+  zone.select();
+  zone.setSelectionRange(0, 999999);
+  try{
+    navigator.clipboard.writeText(zone.value).then(
+      ()=>alert('Texte copié — colle-le dans SMS, WhatsApp ou Mail.'),
+      ()=>document.execCommand('copy') && alert('Texte copié.')
+    );
+  }catch(e){
+    try{ document.execCommand('copy'); alert('Texte copié.'); }
+    catch(e2){ alert('Copie impossible automatiquement — sélectionne le texte manuellement.'); }
+  }
+}
+function exporterResumePDF(){
+  const texte = document.getElementById('res-texte').value;
+  if(!texte){ alert('Génère d\'abord le texte.'); return; }
+  const zone = document.getElementById('zone-impression');
+  const blocsHtml = texte.split('\n\n').map(bloc =>
+    `<div style="margin-bottom:22px;white-space:pre-line;">${bloc.replace(/</g,'&lt;')}</div>`
+  ).join('');
+  zone.innerHTML = `
+    <h1>Résumé — Matériel en cours</h1>
+    <p>Édité le ${new Date().toLocaleDateString('fr-FR')}</p>
+    ${blocsHtml}
+  `;
+  window.print();
+}
+
 function toutRendre(nom){
   if(!confirm(`Créer un retour complet pour tout ce que ${nom} a actuellement en cours ?`)) return;
   const soldes = calculerSoldes();
