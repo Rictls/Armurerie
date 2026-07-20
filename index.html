@@ -483,6 +483,7 @@ function allerA(page){
   if(page==='materiel') rafraichirMateriel();
   if(page==='reintegration') rafraichirReintegration();
   if(page==='resume') initResume();
+  if(page==='saisie') rafraichirOptionsMaterielSaisie();
   if(page==='registre') rafraichirRegistre();
   if(page==='dashboard') rafraichirDashboard();
 }
@@ -881,6 +882,14 @@ function remplirRefSortie(){
 const MATERIELS_A_NUMERO_SERIE = ['PA MASG1 - arme de service'];
 function necessiteSerie(materiel){
   return MATERIELS_A_NUMERO_SERIE.includes(materiel);
+}
+function rafraichirOptionsMaterielSaisie(){
+  const noms = nomsMateriels();
+  document.querySelectorAll('#s-lignes .s-mat').forEach(sel=>{
+    const valeurActuelle = sel.value;
+    const optionVide = `<option value="" ${valeurActuelle?'':'selected'}>— Choisir —</option>`;
+    sel.innerHTML = optionVide + noms.map(n=>`<option value="${n}" ${n===valeurActuelle?'selected':''}>${n}</option>`).join('');
+  });
 }
 function ajouterLigneSaisie(materielVal, qteVal, serieVal){
   const wrap = document.getElementById('s-lignes');
