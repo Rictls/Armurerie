@@ -9,18 +9,23 @@
 <link rel="apple-touch-icon" href="icon-192.png">
 <style>
 :root{
-  --vert:#1D4C3A; --vert-clair:#E1F5EE; --creme:#F4E9E0; --brique:#8B3626;
+  --vert:#1D4C3A; --vert-texte:#1D4C3A; --vert-clair:#E1F5EE; --creme:#F4E9E0; --brique:#8B3626;
   --bg:#FAFAF7; --carte:#FFFFFF; --bordure:#E4E1D8; --texte:#22261F;
   --texte-att:#5F5E5A; --rouge:#A32D2D; --rouge-bg:#FCEBEB; --vert-bg:#EAF3DE;
+}
+[data-theme="dark"]{
+  --vert:#1D4C3A; --vert-texte:#5FBE9A; --vert-clair:#1B3B33; --creme:#2A2118; --brique:#E08A6B;
+  --bg:#14171A; --carte:#1E2227; --bordure:#33383D; --texte:#ECEAE4;
+  --texte-att:#9B9890; --rouge:#E58B8B; --rouge-bg:#3A2222; --vert-bg:#20331F;
 }
 *{box-sizing:border-box;}
 body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;background:var(--bg);color:var(--texte);padding-bottom:70px;}
 header{background:var(--vert);color:#fff;padding:14px 16px;position:sticky;top:0;z-index:10;}
 header h1{margin:0;font-size:17px;font-weight:600;}
 header p{margin:2px 0 0;font-size:12px;opacity:.85;}
-nav{display:flex;position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--bordure);z-index:10;}
+nav{display:flex;position:fixed;bottom:0;left:0;right:0;background:var(--carte);border-top:1px solid var(--bordure);z-index:10;}
 nav button{flex:1;background:none;border:none;padding:10px 4px 8px;font-size:11px;color:var(--texte-att);display:flex;flex-direction:column;align-items:center;gap:3px;}
-nav button.actif{color:var(--vert);font-weight:600;}
+nav button.actif{color:var(--vert-texte);font-weight:600;}
 nav button .ic{font-size:19px;}
 main{padding:14px;max-width:720px;margin:0 auto;}
 .page{display:none;}
@@ -29,11 +34,11 @@ h2{font-size:16px;margin:0 0 10px;}
 .carte{background:var(--carte);border:1px solid var(--bordure);border-radius:12px;padding:14px;margin-bottom:12px;}
 label{display:block;font-size:12px;font-weight:600;color:var(--texte-att);margin:10px 0 4px;}
 label:first-child{margin-top:0;}
-input,select{width:100%;padding:9px 10px;border:1px solid var(--bordure);border-radius:8px;font-size:16px;background:#fff;color:var(--texte);}
+input,select{width:100%;padding:9px 10px;border:1px solid var(--bordure);border-radius:8px;font-size:16px;background:var(--carte);color:var(--texte);}
 input:focus,select:focus{outline:2px solid var(--vert);outline-offset:-1px;}
 .btn{display:inline-block;background:var(--vert);color:#fff;border:none;border-radius:8px;padding:11px 16px;font-size:14px;font-weight:600;text-align:center;width:100%;margin-top:12px;}
-.btn.secondaire{background:#fff;color:var(--vert);border:1px solid var(--vert);}
-.btn.danger{background:#fff;color:var(--rouge);border:1px solid var(--rouge);}
+.btn.secondaire{background:var(--carte);color:var(--vert-texte);border:1px solid var(--vert-texte);}
+.btn.danger{background:var(--carte);color:var(--rouge);border:1px solid var(--rouge);}
 .btn.petit{width:auto;padding:7px 12px;font-size:13px;margin-top:0;}
 .ligne-mat{display:grid;grid-template-columns:1fr 70px 32px;gap:6px;align-items:end;margin-bottom:8px;}
 .ligne-mat label{margin:0 0 3px;}
@@ -65,19 +70,19 @@ td{padding:7px 6px;border-bottom:1px solid var(--bordure);}
 .kpi select{margin-bottom:8px;font-size:16px;padding:6px 8px;}
 .kpi .lbl{font-size:11px;color:var(--texte-att);margin:0 0 2px;}
 .kpi .duo{display:flex;justify-content:space-between;}
-.kpi .val{font-size:22px;font-weight:600;color:var(--vert);}
+.kpi .val{font-size:22px;font-weight:600;color:var(--vert-texte);}
 .kpi.alerte{background:var(--rouge-bg);}
 .kpi.alerte .lbl{color:var(--rouge);}
 .kpi.alerte .val{color:var(--rouge);font-size:26px;}
 .section-titre{font-size:13px;font-weight:600;color:var(--texte-att);text-transform:uppercase;letter-spacing:.03em;margin:18px 0 8px;}
 .accueil-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:8px;}
-.accueil-btn{background:var(--carte);border:1px solid var(--bordure);border-radius:14px;padding:20px 10px;font-size:13px;font-weight:600;color:var(--vert);text-align:center;line-height:1.4;}
+.accueil-btn{background:var(--carte);border:1px solid var(--bordure);border-radius:14px;padding:20px 10px;font-size:13px;font-weight:600;color:var(--vert-texte);text-align:center;line-height:1.4;}
 .accueil-btn .ic{display:block;font-size:28px;margin-bottom:8px;}
 .accueil-btn:active{background:var(--vert-bg);}
 .resume-ligne{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--bordure);font-size:14px;}
 .resume-ligne:last-child{border-bottom:none;}
 .resume-ligne .v{font-weight:600;}
-.btn-action{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--bordure);border-radius:10px;padding:11px 12px;font-size:14px;font-weight:600;color:var(--texte);text-align:left;}
+.btn-action{display:flex;align-items:center;gap:10px;background:var(--carte);border:1px solid var(--bordure);border-radius:10px;padding:11px 12px;font-size:14px;font-weight:600;color:var(--texte);text-align:left;}
 .btn-action.danger{color:var(--rouge);border-color:#F0D4D4;}
 .btn-action .ic-a{font-size:17px;}
 .hs-ligne{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--bordure);font-size:13px;}
@@ -91,6 +96,9 @@ td{padding:7px 6px;border-bottom:1px solid var(--bordure);}
 .resultat-clic{cursor:pointer;}
 .resultat-clic:active{background:var(--vert-bg);}
 .impression-seule{display:none;}
+.toast{position:fixed;left:50%;bottom:76px;transform:translateX(-50%) translateY(20px);background:var(--texte);color:#fff;padding:10px 18px;border-radius:24px;font-size:13px;font-weight:600;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;z-index:50;max-width:88%;text-align:center;}
+.toast.visible{opacity:1;transform:translateX(-50%) translateY(0);}
+.banniere-alerte{background:var(--rouge-bg);color:#791F1F;font-size:13px;font-weight:600;padding:10px 12px;border-radius:8px;margin:4px 0 0;}
 @media print{
   header, nav, main{display:none !important;}
   .impression-seule{display:block !important;}
@@ -145,7 +153,7 @@ td{padding:7px 6px;border-bottom:1px solid var(--bordure);}
       <button class="accueil-btn" style="grid-column:1 / span 2;" onclick="allerA('dashboard')"><span class="ic">📊</span>Tableau de bord</button>
     </div>
 
-    <p id="a-derniere-sauvegarde" class="note" style="margin:2px 0 0;"></p>
+    <div id="a-derniere-sauvegarde"></div>
 
     <div class="section-titre">Recherche</div>
     <input type="text" id="a-recherche" placeholder="Nom, matériel ou HS...">
@@ -282,6 +290,29 @@ td{padding:7px 6px;border-bottom:1px solid var(--bordure);}
     <div id="mat-liste"></div>
   </section>
 
+  <!-- ================= REGLAGES ================= -->
+  <section id="page-reglages" class="page">
+    <h2>Réglages</h2>
+
+    <div class="section-titre" style="margin-top:0;">Apparence</div>
+    <label>Thème</label>
+    <select id="reg-theme" onchange="changerTheme(this.value)">
+      <option value="auto">Automatique (selon l'iPhone)</option>
+      <option value="clair">Clair</option>
+      <option value="sombre">Sombre</option>
+    </select>
+
+    <div class="section-titre">Sauvegarde</div>
+    <button class="btn secondaire" onclick="document.getElementById('reg-fichier-import').click()">📂 Importer une sauvegarde (.json)</button>
+    <input type="file" id="reg-fichier-import" accept="application/json" style="display:none;" onchange="importerJSON(this.files[0])">
+
+    <div class="top-actions" style="margin-top:18px;">
+      <div class="section-titre" style="margin:0;">Gérer les unités</div>
+      <button class="icon-btn" onclick="ajouterUnite()">+ Ajouter</button>
+    </div>
+    <div id="unites-liste"></div>
+  </section>
+
   <!-- ================= REGISTRE ================= -->
   <section id="page-registre" class="page">
     <div class="top-actions">
@@ -386,18 +417,19 @@ td{padding:7px 6px;border-bottom:1px solid var(--bordure);}
   <button data-page="saisie" onclick="allerA('saisie')"><span class="ic">📝</span>Saisie</button>
   <button data-page="reintegration" onclick="allerA('reintegration')"><span class="ic">↩️</span>Réintègre</button>
   <button data-page="materiel" onclick="allerA('materiel')"><span class="ic">📦</span>Matériel</button>
-  <button data-page="registre" onclick="allerA('registre')"><span class="ic">📋</span>Registre</button>
+  <button data-page="reglages" onclick="allerA('reglages')"><span class="ic">⚙️</span>Réglages</button>
   <button data-page="dashboard" onclick="allerA('dashboard')"><span class="ic">📊</span>Tableau de bord</button>
 </nav>
 
 <div id="zone-impression" class="impression-seule"></div>
+<div id="toast" class="toast"></div>
 
 <script>
 /* ====================== DONNEES ====================== */
-const UNITES = ['Peloton 1','Peloton 2','Peloton 3','Peloton 4','BLOC 2','Prêt MPI','Armes de service'];
+let unites = charger('am_unites', ['Peloton 1','Peloton 2','Peloton 3','Peloton 4','BLOC 2','Prêt MPI','Armes de service','Tir CQT','Tir BO']);
 
-const SEED_MATERIELS = [{"categorie": "Armes de service", "materiel": "PA MASG1 - arme de service", "quantite": 8}, {"categorie": "Armes de service", "materiel": "MUNITIONS DE SERVICE", "quantite": 240}, {"categorie": "matériels RGPL", "materiel": "PA MASG1", "quantite": 62, "hs": 1}, {"categorie": "matériels RGPL", "materiel": "ASSEMBLEUR DE STOCKAGE", "quantite": 62}, {"categorie": "matériels RGPL", "materiel": "CANON TIR RÉDUIT", "quantite": 10}, {"categorie": "matériels RGPL", "materiel": "CHARGEURS", "quantite": 140}, {"categorie": "matériels RGPL", "materiel": "CHARGETTE", "quantite": 2}, {"categorie": "matériels RGPL", "materiel": "PIE", "quantite": 7}, {"categorie": "matériels RGPL", "materiel": "CARTOUCHE PIE", "quantite": 144}, {"categorie": "matériels RGPL", "materiel": "MALLETTE DE TRANSPORT PIE", "quantite": 7}, {"categorie": "matériels RGPL", "materiel": "MUNITIONS INERTES", "quantite": 100}, {"categorie": "matériels RGPL", "materiel": "BOULETS EXERCICES / GRENADES A PLATRE", "quantite": 124}, {"categorie": "matériels RGPL", "materiel": "BPT", "quantite": 80, "hs": 3}, {"categorie": "matériels RGPL", "materiel": "ETUIS BPT", "quantite": 80}, {"categorie": "matériels RGPL", "materiel": "TUBE À SABLE", "quantite": 3}, {"categorie": "matériels RGPL", "materiel": "ÉTUIS PA MAS G1 - DROITIER", "quantite": 70}, {"categorie": "matériels RGPL", "materiel": "ÉTUIS PA MAS G1 - GAUCHER", "quantite": 10}, {"categorie": "matériels RGPL", "materiel": "BLUE GUN - PA MAS G1", "quantite": 16}, {"categorie": "matériels RGPL", "materiel": "COUTEAUX - BLACK", "quantite": 10}, {"categorie": "matériels RGPL", "materiel": "BPT MOUSSE", "quantite": 34}, {"categorie": "matériels RGPL", "materiel": "MENOTTES Factices", "quantite": 60, "hs": 1}, {"categorie": "matériels RGPL", "materiel": "BAGS", "quantite": 19}, {"categorie": "matériels RGPL", "materiel": "GPBI", "quantite": 10}, {"categorie": "matériels RGPL", "materiel": "lot SECOURISME", "quantite": 3}, {"categorie": "matériels RGPL", "materiel": "DRAPEAU TRICOLORE", "quantite": 1}, {"categorie": "matériels RGPL", "materiel": "CANTINE TIR", "quantite": 1}, {"categorie": "matériels RGPL", "materiel": "ENROULEUR ELECTRIQUE", "quantite": 1}, {"categorie": "matériels RGPL", "materiel": "COUVERTURE", "quantite": 6}, {"categorie": "matériels CRI", "materiel": "MUNITIONS INERTES", "quantite": 80}, {"categorie": "matériels CRI", "materiel": "BLUE GUN - SIG PRO", "quantite": 3}, {"categorie": "matériels CRI", "materiel": "RED GUN - SIG PRO", "quantite": 30}, {"categorie": "matériels CRI", "materiel": "BAGS", "quantite": 10}, {"categorie": "Armes de service", "materiel": "Mallette PAMAS G1", "quantite": 8, "hs": 0}, {"categorie": "matériels RGPL", "materiel": "Tablette NEO", "quantite": 3, "hs": 0}, {"categorie": "Armes de service", "materiel": "CHARGEURS de services", "quantite": 16, "hs": 0}, {"categorie": "Armes de service", "materiel": "ASSEMBLEUR DE STOCKAGE De service", "quantite": 8, "hs": 0}, {"categorie": "matériels RGPL", "materiel": "Lacrymogène", "quantite": 3, "hs": 0}, {"categorie": "matériels RGPL", "materiel": "TPH 700", "quantite": 6, "hs": 0}, {"categorie": "matériels RGPL", "materiel": "CLIP TPH 700", "quantite": 6, "hs": 0}];
-const SEED_MOUVEMENTS = [{"id": "M1-4dq3", "date": "2026-07-19", "unite": "Armes de service", "type": "Sortie", "grade": "CEN", "nom": "Dussert", "refSortie": null, "lignes": [{"materiel": "PA MASG1 - arme de service", "quantite": 1, "numeroSerie": "47181"}, {"materiel": "CHARGEURS de services", "quantite": 2}, {"materiel": "MUNITIONS DE SERVICE", "quantite": 30}, {"materiel": "ASSEMBLEUR DE STOCKAGE De service", "quantite": 1}, {"materiel": "Mallette PAMAS G1", "quantite": 1}]}, {"id": "M2-541d", "date": "2026-07-19", "unite": "Armes de service", "type": "Sortie", "grade": "MJR", "nom": "RAZA", "refSortie": null, "lignes": [{"materiel": "PA MASG1 - arme de service", "quantite": 1, "numeroSerie": "47196"}, {"materiel": "CHARGEURS de services", "quantite": 2}, {"materiel": "MUNITIONS DE SERVICE", "quantite": 30}, {"materiel": "ASSEMBLEUR DE STOCKAGE De service", "quantite": 1}, {"materiel": "Mallette PAMAS G1", "quantite": 1}]}, {"id": "M3-5puh", "date": "2026-07-19", "unite": "Armes de service", "type": "Sortie", "grade": "MJR", "nom": "BOULAY", "refSortie": null, "lignes": [{"materiel": "PA MASG1 - arme de service", "quantite": 1, "numeroSerie": "47200"}, {"materiel": "CHARGEURS de services", "quantite": 2}, {"materiel": "MUNITIONS DE SERVICE", "quantite": 30}, {"materiel": "ASSEMBLEUR DE STOCKAGE De service", "quantite": 1}, {"materiel": "Mallette PAMAS G1", "quantite": 1}]}, {"id": "M4-6bwh", "date": "2026-07-19", "unite": "Armes de service", "type": "Sortie", "grade": "LTN", "nom": "SOLON", "refSortie": null, "lignes": [{"materiel": "PA MASG1 - arme de service", "quantite": 1, "numeroSerie": "47198"}, {"materiel": "CHARGEURS de services", "quantite": 2}, {"materiel": "MUNITIONS DE SERVICE", "quantite": 30}, {"materiel": "ASSEMBLEUR DE STOCKAGE De service", "quantite": 1}, {"materiel": "Mallette PAMAS G1", "quantite": 1}]}, {"id": "M5-6v1l", "date": "2026-07-19", "unite": "Armes de service", "type": "Sortie", "grade": "ADC", "nom": "Durand", "refSortie": null, "lignes": [{"materiel": "PA MASG1 - arme de service", "quantite": 1, "numeroSerie": "47195"}, {"materiel": "CHARGEURS de services", "quantite": 2}, {"materiel": "MUNITIONS DE SERVICE", "quantite": 30}, {"materiel": "ASSEMBLEUR DE STOCKAGE De service", "quantite": 1}, {"materiel": "Mallette PAMAS G1", "quantite": 1}]}, {"id": "M6-7wq6", "date": "2026-07-19", "unite": "Armes de service", "type": "Sortie", "grade": "MJR", "nom": "ROUZIC", "refSortie": null, "lignes": [{"materiel": "PA MASG1 - arme de service", "quantite": 1, "numeroSerie": "47197"}, {"materiel": "CHARGEURS de services", "quantite": 2}, {"materiel": "MUNITIONS DE SERVICE", "quantite": 30}, {"materiel": "ASSEMBLEUR DE STOCKAGE De service", "quantite": 1}, {"materiel": "Mallette PAMAS G1", "quantite": 1}]}, {"id": "M7-8ffm", "date": "2026-07-19", "unite": "Armes de service", "type": "Sortie", "grade": "ADJ", "nom": "DELAVAUD", "refSortie": null, "lignes": [{"materiel": "PA MASG1 - arme de service", "quantite": 1, "numeroSerie": "47183"}, {"materiel": "CHARGEURS de services", "quantite": 2}, {"materiel": "MUNITIONS DE SERVICE", "quantite": 30}, {"materiel": "ASSEMBLEUR DE STOCKAGE De service", "quantite": 1}, {"materiel": "Mallette PAMAS G1", "quantite": 1}]}, {"id": "M8-8zid", "date": "2026-07-19", "unite": "Armes de service", "type": "Sortie", "grade": "MJR", "nom": "MARCHAL", "refSortie": null, "lignes": [{"materiel": "PA MASG1 - arme de service", "quantite": 1, "numeroSerie": "47207"}, {"materiel": "CHARGEURS de services", "quantite": 2}, {"materiel": "MUNITIONS DE SERVICE", "quantite": 30}, {"materiel": "ASSEMBLEUR DE STOCKAGE De service", "quantite": 1}, {"materiel": "Mallette PAMAS G1", "quantite": 1}]}, {"id": "M9-cq3b", "date": "2026-07-19", "unite": "Peloton 1", "type": "Sortie", "grade": "MJR", "nom": "RAZA", "refSortie": null, "lignes": [{"materiel": "ÉTUIS PA MAS G1 - DROITIER", "quantite": 18}]}, {"id": "M10-djz4", "date": "2026-07-19", "unite": "Peloton 1", "type": "Sortie", "grade": "MJR", "nom": "RAZA", "refSortie": null, "lignes": [{"materiel": "ÉTUIS PA MAS G1 - GAUCHER", "quantite": 1}]}, {"id": "M13-g6ea", "date": "2026-07-19", "unite": "Peloton 3", "type": "Sortie", "grade": "MJR", "nom": "VIE", "refSortie": null, "lignes": [{"materiel": "ÉTUIS PA MAS G1 - DROITIER", "quantite": 23}]}, {"id": "M15-pkt9", "date": "2026-07-19", "unite": "BLOC 2", "type": "Sortie", "grade": "GND", "nom": "TESSA", "refSortie": null, "lignes": [{"materiel": "PA MASG1", "quantite": 10}, {"materiel": "CHARGEURS", "quantite": 10}, {"materiel": "MUNITIONS INERTES", "quantite": 50}, {"materiel": "BLUE GUN - PA MAS G1", "quantite": 10}, {"materiel": "MENOTTES Factices", "quantite": 10}, {"materiel": "DRAPEAU TRICOLORE", "quantite": 1}, {"materiel": "BAGS", "quantite": 4}, {"materiel": "BPT MOUSSE", "quantite": 9}, {"materiel": "TUBE À SABLE", "quantite": 1}, {"materiel": "lot SECOURISME", "quantite": 2}]}, {"id": "M16-qdfn", "date": "2026-07-19", "unite": "Prêt MPI", "type": "Sortie", "grade": "MJR", "nom": "BOULAY", "refSortie": null, "lignes": [{"materiel": "BLUE GUN - PA MAS G1", "quantite": 1}]}, {"id": "M17-r4o5", "date": "2026-07-19", "unite": "Prêt MPI", "type": "Sortie", "grade": "MJR", "nom": "MARCHAL", "refSortie": null, "lignes": [{"materiel": "BLUE GUN - SIG PRO", "quantite": 1}]}, {"id": "M19-ufwm", "date": "2026-07-19", "unite": "Peloton 2", "type": "Sortie", "grade": "MJR", "nom": "BROSSET", "refSortie": null, "lignes": [{"materiel": "BPT", "quantite": 22}]}, {"id": "M20-uzqz", "date": "2026-07-19", "unite": "Peloton 3", "type": "Sortie", "grade": "MJR", "nom": "VIE", "refSortie": null, "lignes": [{"materiel": "BPT", "quantite": 23}]}, {"id": "M19-1bpd", "date": "2026-07-19", "unite": "Peloton 2", "type": "Sortie", "grade": "MJR", "nom": "BROSSET", "refSortie": null, "lignes": [{"materiel": "PA MASG1", "quantite": 22}, {"materiel": "CHARGEURS", "quantite": 22}, {"materiel": "MUNITIONS INERTES", "quantite": 50}]}, {"id": "M20-48mc", "date": "2026-07-19", "unite": "Peloton 3", "type": "Sortie", "grade": "MJR", "nom": "VIE", "refSortie": null, "lignes": [{"materiel": "PA MASG1", "quantite": 23}, {"materiel": "CHARGEURS", "quantite": 23}, {"materiel": "MENOTTES Factices", "quantite": 12}, {"materiel": "COUTEAUX - BLACK", "quantite": 1}, {"materiel": "MUNITIONS INERTES", "quantite": 50}]}, {"id": "M21-e355", "date": "2026-07-19", "unite": "Peloton 3", "type": "Retour", "grade": "Mjr", "nom": "Vie", "refSortie": "M20-48mc", "lignes": [{"materiel": "PA MASG1", "quantite": 23}, {"materiel": "CHARGEURS", "quantite": 23}, {"materiel": "MENOTTES Factices", "quantite": 12}, {"materiel": "COUTEAUX - BLACK", "quantite": 1}, {"materiel": "MUNITIONS INERTES", "quantite": 50}]}, {"id": "M22-ervt", "date": "2026-07-19", "unite": "Peloton 2", "type": "Retour", "grade": "Mjr", "nom": "BROSSET", "refSortie": "M19-1bpd", "lignes": [{"materiel": "PA MASG1", "quantite": 22}, {"materiel": "CHARGEURS", "quantite": 22}, {"materiel": "MUNITIONS INERTES", "quantite": 50}]}, {"id": "M23-gjep", "date": "2026-07-19", "unite": "Peloton 3", "type": "Retour", "grade": "Mjr", "nom": "Vie", "refSortie": "M20-uzqz", "lignes": [{"materiel": "BPT", "quantite": 23}]}, {"id": "M24-iml0", "date": "2026-07-19", "unite": "Peloton 2", "type": "Retour", "grade": "MJR", "nom": "BROSSET", "refSortie": "M19-ufwm", "lignes": [{"materiel": "BPT", "quantite": 22}]}, {"id": "M25-lhmp", "date": "2026-07-20", "unite": "Peloton 2", "type": "Sortie", "grade": "MJR", "nom": "BROSSET", "refSortie": null, "lignes": [{"materiel": "PA MASG1", "quantite": 22}, {"materiel": "CHARGEURS", "quantite": 44}, {"materiel": "MUNITIONS INERTES", "quantite": 50}, {"materiel": "BPT", "quantite": 22}]}, {"id": "M26-np5i", "date": "2026-07-20", "unite": "Peloton 1", "type": "Sortie", "grade": "Mjr", "nom": "RAZA", "refSortie": null, "lignes": [{"materiel": "BPT", "quantite": 20}, {"materiel": "CHARGEURS", "quantite": 20}, {"materiel": "PA MASG1", "quantite": 20}, {"materiel": "MUNITIONS INERTES", "quantite": 50}]}, {"id": "M27-rmhu", "date": "2026-07-20", "unite": "Peloton 3", "type": "Sortie", "grade": "Mjr", "nom": "VIE", "refSortie": null, "lignes": [{"materiel": "PA MASG1", "quantite": 9}, {"materiel": "CHARGEURS", "quantite": 18}, {"materiel": "MUNITIONS INERTES", "quantite": 30}, {"materiel": "MENOTTES Factices", "quantite": 12}, {"materiel": "BPT", "quantite": 23}, {"materiel": "COUTEAUX - BLACK", "quantite": 1}, {"materiel": "BLUE GUN - PA MAS G1", "quantite": 5}, {"materiel": "RED GUN - SIG PRO", "quantite": 8}, {"materiel": "BLUE GUN - SIG PRO", "quantite": 1}]}, {"id": "M28-ubdv", "date": "2026-07-20", "unite": "BLOC 2", "type": "Sortie", "grade": "Gnd", "nom": "TESSA", "refSortie": null, "lignes": [{"materiel": "Tablette NEO", "quantite": 2}]}, {"id": "M29-uzmz", "date": "2026-07-20", "unite": "BLOC 2", "type": "Sortie", "grade": "GND", "nom": "TESSA", "refSortie": null, "lignes": [{"materiel": "BPT", "quantite": 12}, {"materiel": "ÉTUIS PA MAS G1 - DROITIER", "quantite": 3}]}, {"id": "M30-t9bs1", "date": "2026-07-20", "unite": "Peloton 3", "type": "Retour", "grade": "Mjr", "nom": "VIE", "refSortie": "M27-rmhu", "lignes": [{"materiel": "PA MASG1", "quantite": 9}, {"materiel": "CHARGEURS", "quantite": 18}, {"materiel": "MUNITIONS INERTES", "quantite": 30}, {"materiel": "MENOTTES Factices", "quantite": 12}, {"materiel": "BPT", "quantite": 23}, {"materiel": "COUTEAUX - BLACK", "quantite": 1}, {"materiel": "BLUE GUN - PA MAS G1", "quantite": 5}, {"materiel": "RED GUN - SIG PRO", "quantite": 8}, {"materiel": "BLUE GUN - SIG PRO", "quantite": 1}]}, {"id": "M31-tqee1", "date": "2026-07-20", "unite": "Peloton 1", "type": "Retour", "grade": "Mjr", "nom": "RAZA", "refSortie": "M26-np5i", "lignes": [{"materiel": "CHARGEURS", "quantite": 20}, {"materiel": "PA MASG1", "quantite": 20}, {"materiel": "MUNITIONS INERTES", "quantite": 50}]}, {"id": "M32-uhyq1", "date": "2026-07-20", "unite": "Peloton 2", "type": "Retour", "grade": "MJR", "nom": "BROSSET", "refSortie": "M25-lhmp", "lignes": [{"materiel": "PA MASG1", "quantite": 22}, {"materiel": "CHARGEURS", "quantite": 44}, {"materiel": "MUNITIONS INERTES", "quantite": 50}, {"materiel": "BPT", "quantite": 22}]}, {"id": "M31-xijf", "date": "2026-07-14", "unite": "Peloton 2", "type": "Sortie", "grade": "MJR", "nom": "BROSSET", "refSortie": null, "lignes": [{"materiel": "ÉTUIS PA MAS G1 - DROITIER", "quantite": 18}, {"materiel": "ÉTUIS PA MAS G1 - GAUCHER", "quantite": 4}]}, {"id": "M33-4yva", "date": "2026-07-20", "unite": "BLOC 2", "type": "Sortie", "grade": "GND", "nom": "TESSA", "refSortie": null, "lignes": [{"materiel": "BOULETS EXERCICES / GRENADES A PLATRE", "quantite": 10}]}, {"id": "M34-2fd71", "date": "2026-07-20", "unite": "Armes de service", "type": "Retour", "grade": "MJR", "nom": "BOULAY", "refSortie": "M3-5puh", "lignes": [{"materiel": "CHARGEURS de services", "quantite": 2}, {"materiel": "MUNITIONS DE SERVICE", "quantite": 30}, {"materiel": "ASSEMBLEUR DE STOCKAGE De service", "quantite": 1}, {"materiel": "Mallette PAMAS G1", "quantite": 1}]}, {"id": "M35-2fd72", "date": "2026-07-20", "unite": "Armes de service", "type": "Retour", "grade": "ADJ", "nom": "DELAVAUD", "refSortie": "M7-8ffm", "lignes": [{"materiel": "CHARGEURS de services", "quantite": 2}, {"materiel": "MUNITIONS DE SERVICE", "quantite": 30}, {"materiel": "ASSEMBLEUR DE STOCKAGE De service", "quantite": 1}, {"materiel": "Mallette PAMAS G1", "quantite": 1}]}, {"id": "M36-2fd73", "date": "2026-07-20", "unite": "Armes de service", "type": "Retour", "grade": "ADC", "nom": "Durand", "refSortie": "M5-6v1l", "lignes": [{"materiel": "CHARGEURS de services", "quantite": 2}, {"materiel": "MUNITIONS DE SERVICE", "quantite": 30}, {"materiel": "ASSEMBLEUR DE STOCKAGE De service", "quantite": 1}, {"materiel": "Mallette PAMAS G1", "quantite": 1}]}, {"id": "M37-2fd74", "date": "2026-07-20", "unite": "Armes de service", "type": "Retour", "grade": "CEN", "nom": "Dussert", "refSortie": "M1-4dq3", "lignes": [{"materiel": "CHARGEURS de services", "quantite": 2}, {"materiel": "MUNITIONS DE SERVICE", "quantite": 30}, {"materiel": "ASSEMBLEUR DE STOCKAGE De service", "quantite": 1}, {"materiel": "Mallette PAMAS G1", "quantite": 1}]}, {"id": "M38-2fd75", "date": "2026-07-20", "unite": "Armes de service", "type": "Retour", "grade": "MJR", "nom": "MARCHAL", "refSortie": "M8-8zid", "lignes": [{"materiel": "CHARGEURS de services", "quantite": 2}, {"materiel": "MUNITIONS DE SERVICE", "quantite": 30}, {"materiel": "ASSEMBLEUR DE STOCKAGE De service", "quantite": 1}, {"materiel": "Mallette PAMAS G1", "quantite": 1}]}, {"id": "M39-2fd76", "date": "2026-07-20", "unite": "Armes de service", "type": "Retour", "grade": "MJR", "nom": "RAZA", "refSortie": "M2-541d", "lignes": [{"materiel": "CHARGEURS de services", "quantite": 2}, {"materiel": "MUNITIONS DE SERVICE", "quantite": 30}, {"materiel": "ASSEMBLEUR DE STOCKAGE De service", "quantite": 1}, {"materiel": "Mallette PAMAS G1", "quantite": 1}]}, {"id": "M40-2fd77", "date": "2026-07-20", "unite": "Armes de service", "type": "Retour", "grade": "MJR", "nom": "ROUZIC", "refSortie": "M6-7wq6", "lignes": [{"materiel": "CHARGEURS de services", "quantite": 2}, {"materiel": "MUNITIONS DE SERVICE", "quantite": 30}, {"materiel": "ASSEMBLEUR DE STOCKAGE De service", "quantite": 1}, {"materiel": "Mallette PAMAS G1", "quantite": 1}]}, {"id": "M41-2fd88", "date": "2026-07-20", "unite": "Armes de service", "type": "Retour", "grade": "LTN", "nom": "SOLON", "refSortie": "M4-6bwh", "lignes": [{"materiel": "CHARGEURS de services", "quantite": 2}, {"materiel": "MUNITIONS DE SERVICE", "quantite": 30}, {"materiel": "ASSEMBLEUR DE STOCKAGE De service", "quantite": 1}, {"materiel": "Mallette PAMAS G1", "quantite": 1}]}, {"id": "M42-3r6b", "date": "2026-07-20", "unite": "Armes de service", "type": "Sortie", "grade": "CEN", "nom": "Dussert", "refSortie": null, "lignes": [{"materiel": "ASSEMBLEUR DE STOCKAGE De service", "quantite": 1}, {"materiel": "CHARGEURS de services", "quantite": 2}, {"materiel": "MUNITIONS DE SERVICE", "quantite": 30}, {"materiel": "Mallette PAMAS G1", "quantite": 1}]}, {"id": "M43-ncd9", "date": "2026-07-20", "unite": "Armes de service", "type": "Sortie", "grade": "Mjr", "nom": "Raza", "refSortie": null, "lignes": [{"materiel": "CHARGEURS de services", "quantite": 2}, {"materiel": "ASSEMBLEUR DE STOCKAGE De service", "quantite": 1}, {"materiel": "MUNITIONS DE SERVICE", "quantite": 30}, {"materiel": "Mallette PAMAS G1", "quantite": 1}]}, {"id": "M44-nykx", "date": "2026-07-20", "unite": "Armes de service", "type": "Sortie", "grade": "MJR", "nom": "BOULAY", "refSortie": null, "lignes": [{"materiel": "CHARGEURS de services", "quantite": 2}, {"materiel": "ASSEMBLEUR DE STOCKAGE De service", "quantite": 1}, {"materiel": "MUNITIONS DE SERVICE", "quantite": 30}, {"materiel": "Mallette PAMAS G1", "quantite": 1}]}, {"id": "M45-obcz", "date": "2026-07-20", "unite": "Armes de service", "type": "Sortie", "grade": "LTN", "nom": "SOLON", "refSortie": null, "lignes": [{"materiel": "CHARGEURS de services", "quantite": 2}, {"materiel": "ASSEMBLEUR DE STOCKAGE De service", "quantite": 1}, {"materiel": "MUNITIONS DE SERVICE", "quantite": 30}, {"materiel": "Mallette PAMAS G1", "quantite": 1}]}, {"id": "M46-orjs", "date": "2026-07-20", "unite": "Armes de service", "type": "Sortie", "grade": "ADC", "nom": "Durand", "refSortie": null, "lignes": [{"materiel": "CHARGEURS de services", "quantite": 2}, {"materiel": "ASSEMBLEUR DE STOCKAGE De service", "quantite": 1}, {"materiel": "MUNITIONS DE SERVICE", "quantite": 30}, {"materiel": "Mallette PAMAS G1", "quantite": 1}]}, {"id": "M47-p2xi", "date": "2026-07-20", "unite": "Armes de service", "type": "Sortie", "grade": "MJR", "nom": "ROUZIC", "refSortie": null, "lignes": [{"materiel": "CHARGEURS de services", "quantite": 2}, {"materiel": "ASSEMBLEUR DE STOCKAGE De service", "quantite": 1}, {"materiel": "MUNITIONS DE SERVICE", "quantite": 30}, {"materiel": "Mallette PAMAS G1", "quantite": 1}]}, {"id": "M48-pe72", "date": "2026-07-20", "unite": "Armes de service", "type": "Sortie", "grade": "ADJ", "nom": "DELAVAUD", "refSortie": null, "lignes": [{"materiel": "CHARGEURS de services", "quantite": 2}, {"materiel": "ASSEMBLEUR DE STOCKAGE De service", "quantite": 1}, {"materiel": "MUNITIONS DE SERVICE", "quantite": 30}, {"materiel": "Mallette PAMAS G1", "quantite": 1}]}, {"id": "M49-pnd7", "date": "2026-07-20", "unite": "Armes de service", "type": "Sortie", "grade": "MJR", "nom": "MARCHAL", "refSortie": null, "lignes": [{"materiel": "CHARGEURS de services", "quantite": 2}, {"materiel": "ASSEMBLEUR DE STOCKAGE De service", "quantite": 1}, {"materiel": "MUNITIONS DE SERVICE", "quantite": 30}, {"materiel": "Mallette PAMAS G1", "quantite": 1}]}, {"id": "M50-wf8e1", "date": "2026-07-20", "unite": "Peloton 1", "type": "Retour", "grade": "Mjr", "nom": "RAZA", "refSortie": "M26-np5i", "lignes": [{"materiel": "BPT", "quantite": 20}]}, {"id": "M51-rnqs", "date": "2026-07-21", "unite": "Peloton 1", "type": "Sortie", "grade": "MJR", "nom": "RAZA", "refSortie": null, "lignes": [{"materiel": "BPT", "quantite": 19}, {"materiel": "MENOTTES Factices", "quantite": 10}, {"materiel": "BPT MOUSSE", "quantite": 2}]}, {"id": "M52-ubh1", "date": "2026-07-21", "unite": "Peloton 2", "type": "Sortie", "grade": "MJR", "nom": "BROSSET", "refSortie": null, "lignes": [{"materiel": "BPT MOUSSE", "quantite": 18}, {"materiel": "BPT", "quantite": 18}, {"materiel": "MENOTTES Factices", "quantite": 18}, {"materiel": "Lacrymogène", "quantite": 3}, {"materiel": "PA MASG1", "quantite": 18}]}, {"id": "M53-wqhq", "date": "2026-07-21", "unite": "Prêt MPI", "type": "Sortie", "grade": "MJR", "nom": "VIE", "refSortie": null, "lignes": [{"materiel": "COUTEAUX - BLACK", "quantite": 6}, {"materiel": "BLUE GUN - PA MAS G1", "quantite": 5}, {"materiel": "BLUE GUN - SIG PRO", "quantite": 1}, {"materiel": "TPH 700", "quantite": 6}, {"materiel": "CLIP TPH 700", "quantite": 6}]}, {"id": "M54-fubo", "date": "2026-07-21", "unite": "Peloton 3", "type": "Sortie", "grade": "Mjr", "nom": "Vie", "refSortie": null, "lignes": [{"materiel": "BPT", "quantite": 23}, {"materiel": "PA MASG1", "quantite": 23}, {"materiel": "MUNITIONS INERTES", "quantite": 50}, {"materiel": "CHARGEURS", "quantite": 23}]}, {"id": "M55-22mh1", "date": "2026-07-21", "unite": "Peloton 1", "type": "Retour", "grade": "MJR", "nom": "RAZA", "refSortie": "M51-rnqs", "lignes": [{"materiel": "MENOTTES Factices", "quantite": 10}]}, {"id": "M56-3dng", "date": "2026-07-21", "unite": "Peloton 1", "type": "Sortie", "grade": "MJR", "nom": "RAZA", "refSortie": null, "lignes": [{"materiel": "BLUE GUN - PA MAS G1", "quantite": 4}, {"materiel": "MENOTTES Factices", "quantite": 4}]}, {"id": "M57-3yvt1", "date": "2026-07-21", "unite": "Peloton 2", "type": "Retour", "grade": "MJR", "nom": "BROSSET", "refSortie": "M52-ubh1", "lignes": [{"materiel": "BPT MOUSSE", "quantite": 18}, {"materiel": "BPT", "quantite": 18}, {"materiel": "MENOTTES Factices", "quantite": 18}, {"materiel": "Lacrymogène", "quantite": 3}, {"materiel": "PA MASG1", "quantite": 18}]}, {"id": "M58-5lnc", "date": "2026-07-21", "unite": "Peloton 2", "type": "Sortie", "grade": "MJR", "nom": "BROSSET", "refSortie": null, "lignes": [{"materiel": "BPT MOUSSE", "quantite": 6}, {"materiel": "PA MASG1", "quantite": 6}, {"materiel": "MENOTTES Factices", "quantite": 6}, {"materiel": "TPH 700", "quantite": 2}, {"materiel": "CLIP TPH 700", "quantite": 2}]}, {"id": "M59-745x1", "date": "2026-07-21", "unite": "Prêt MPI", "type": "Retour", "grade": "MJR", "nom": "VIE", "refSortie": "M53-wqhq", "lignes": [{"materiel": "COUTEAUX - BLACK", "quantite": 6}, {"materiel": "BLUE GUN - PA MAS G1", "quantite": 5}, {"materiel": "BLUE GUN - SIG PRO", "quantite": 1}, {"materiel": "TPH 700", "quantite": 6}, {"materiel": "CLIP TPH 700", "quantite": 6}]}, {"id": "M60-88pw", "date": "2026-07-21", "unite": "Prêt MPI", "type": "Sortie", "grade": "MJR", "nom": "Vie", "refSortie": null, "lignes": [{"materiel": "COUTEAUX - BLACK", "quantite": 2}]}, {"id": "M61-b1gi", "date": "2026-07-21", "unite": "Peloton 3", "type": "Sortie", "grade": "MJR", "nom": "VIE", "refSortie": null, "lignes": [{"materiel": "MENOTTES Factices", "quantite": 10}, {"materiel": "COUTEAUX - BLACK", "quantite": 1}, {"materiel": "TPH 700", "quantite": 2}]}];
+const SEED_MATERIELS = [{"categorie": "Armes de service", "materiel": "PA MASG1 - arme de service", "quantite": 8}, {"categorie": "Armes de service", "materiel": "MUNITIONS DE SERVICE", "quantite": 240}, {"categorie": "matériels RGPL", "materiel": "PA MASG1", "quantite": 62, "hs": 1}, {"categorie": "matériels RGPL", "materiel": "ASSEMBLEUR DE STOCKAGE", "quantite": 62}, {"categorie": "matériels RGPL", "materiel": "CANON TIR RÉDUIT", "quantite": 10}, {"categorie": "matériels RGPL", "materiel": "CHARGEURS", "quantite": 140}, {"categorie": "matériels RGPL", "materiel": "CHARGETTE", "quantite": 2}, {"categorie": "matériels RGPL", "materiel": "PIE", "quantite": 7}, {"categorie": "matériels RGPL", "materiel": "CARTOUCHE PIE", "quantite": 144}, {"categorie": "matériels RGPL", "materiel": "MALLETTE DE TRANSPORT PIE", "quantite": 7}, {"categorie": "matériels RGPL", "materiel": "MUNITIONS INERTES", "quantite": 100}, {"categorie": "matériels RGPL", "materiel": "BOULETS EXERCICES / GRENADES A PLATRE", "quantite": 124, "hs": 1}, {"categorie": "matériels RGPL", "materiel": "BPT", "quantite": 80, "hs": 3}, {"categorie": "matériels RGPL", "materiel": "ETUIS BPT", "quantite": 80}, {"categorie": "matériels RGPL", "materiel": "TUBE À SABLE", "quantite": 3}, {"categorie": "matériels RGPL", "materiel": "ÉTUIS PA MAS G1 - DROITIER", "quantite": 70}, {"categorie": "matériels RGPL", "materiel": "ÉTUIS PA MAS G1 - GAUCHER", "quantite": 10}, {"categorie": "matériels RGPL", "materiel": "BLUE GUN - PA MAS G1", "quantite": 16}, {"categorie": "matériels RGPL", "materiel": "COUTEAUX - BLACK", "quantite": 10}, {"categorie": "matériels RGPL", "materiel": "BPT MOUSSE", "quantite": 34}, {"categorie": "matériels RGPL", "materiel": "MENOTTES Factices", "quantite": 60, "hs": 1}, {"categorie": "matériels RGPL", "materiel": "BAGS", "quantite": 19}, {"categorie": "matériels RGPL", "materiel": "GPBI", "quantite": 10}, {"categorie": "matériels RGPL", "materiel": "lot SECOURISME", "quantite": 3}, {"categorie": "matériels RGPL", "materiel": "DRAPEAU TRICOLORE", "quantite": 1}, {"categorie": "matériels RGPL", "materiel": "CANTINE TIR", "quantite": 1}, {"categorie": "matériels RGPL", "materiel": "ENROULEUR ELECTRIQUE", "quantite": 1}, {"categorie": "matériels RGPL", "materiel": "COUVERTURE", "quantite": 6}, {"categorie": "matériels CRI", "materiel": "MUNITIONS INERTES", "quantite": 80}, {"categorie": "matériels CRI", "materiel": "BLUE GUN - SIG PRO", "quantite": 3}, {"categorie": "matériels CRI", "materiel": "RED GUN - SIG PRO", "quantite": 30}, {"categorie": "matériels CRI", "materiel": "BAGS", "quantite": 10}, {"categorie": "Armes de service", "materiel": "Mallette PAMAS G1", "quantite": 8, "hs": 0}, {"categorie": "matériels RGPL", "materiel": "Tablette NEO", "quantite": 3, "hs": 0}, {"categorie": "Armes de service", "materiel": "CHARGEURS de services", "quantite": 16, "hs": 0}, {"categorie": "Armes de service", "materiel": "ASSEMBLEUR DE STOCKAGE De service", "quantite": 8, "hs": 0}, {"categorie": "matériels RGPL", "materiel": "Lacrymogène", "quantite": 5, "hs": 0}, {"categorie": "matériels RGPL", "materiel": "TPH 700", "quantite": 6, "hs": 3}, {"categorie": "matériels RGPL", "materiel": "CLIP TPH 700", "quantite": 6, "hs": 0}, {"categorie": "matériels RGPL", "materiel": "STOP STICK (lot de 2)", "quantite": 3, "hs": 0}];
+const SEED_MOUVEMENTS = [{"id": "M1-4dq3", "date": "2026-07-19", "unite": "Armes de service", "type": "Sortie", "grade": "CEN", "nom": "Dussert", "refSortie": null, "lignes": [{"materiel": "PA MASG1 - arme de service", "quantite": 1, "numeroSerie": "47181"}, {"materiel": "CHARGEURS de services", "quantite": 2}, {"materiel": "MUNITIONS DE SERVICE", "quantite": 30}, {"materiel": "ASSEMBLEUR DE STOCKAGE De service", "quantite": 1}, {"materiel": "Mallette PAMAS G1", "quantite": 1}]}, {"id": "M2-541d", "date": "2026-07-19", "unite": "Armes de service", "type": "Sortie", "grade": "MJR", "nom": "RAZA", "refSortie": null, "lignes": [{"materiel": "PA MASG1 - arme de service", "quantite": 1, "numeroSerie": "47196"}, {"materiel": "CHARGEURS de services", "quantite": 2}, {"materiel": "MUNITIONS DE SERVICE", "quantite": 30}, {"materiel": "ASSEMBLEUR DE STOCKAGE De service", "quantite": 1}, {"materiel": "Mallette PAMAS G1", "quantite": 1}]}, {"id": "M3-5puh", "date": "2026-07-19", "unite": "Armes de service", "type": "Sortie", "grade": "MJR", "nom": "BOULAY", "refSortie": null, "lignes": [{"materiel": "PA MASG1 - arme de service", "quantite": 1, "numeroSerie": "47200"}, {"materiel": "CHARGEURS de services", "quantite": 2}, {"materiel": "MUNITIONS DE SERVICE", "quantite": 30}, {"materiel": "ASSEMBLEUR DE STOCKAGE De service", "quantite": 1}, {"materiel": "Mallette PAMAS G1", "quantite": 1}]}, {"id": "M4-6bwh", "date": "2026-07-19", "unite": "Armes de service", "type": "Sortie", "grade": "LTN", "nom": "SOLON", "refSortie": null, "lignes": [{"materiel": "PA MASG1 - arme de service", "quantite": 1, "numeroSerie": "47198"}, {"materiel": "CHARGEURS de services", "quantite": 2}, {"materiel": "MUNITIONS DE SERVICE", "quantite": 30}, {"materiel": "ASSEMBLEUR DE STOCKAGE De service", "quantite": 1}, {"materiel": "Mallette PAMAS G1", "quantite": 1}]}, {"id": "M5-6v1l", "date": "2026-07-19", "unite": "Armes de service", "type": "Sortie", "grade": "ADC", "nom": "Durand", "refSortie": null, "lignes": [{"materiel": "PA MASG1 - arme de service", "quantite": 1, "numeroSerie": "47195"}, {"materiel": "CHARGEURS de services", "quantite": 2}, {"materiel": "MUNITIONS DE SERVICE", "quantite": 30}, {"materiel": "ASSEMBLEUR DE STOCKAGE De service", "quantite": 1}, {"materiel": "Mallette PAMAS G1", "quantite": 1}]}, {"id": "M6-7wq6", "date": "2026-07-19", "unite": "Armes de service", "type": "Sortie", "grade": "MJR", "nom": "ROUZIC", "refSortie": null, "lignes": [{"materiel": "PA MASG1 - arme de service", "quantite": 1, "numeroSerie": "47197"}, {"materiel": "CHARGEURS de services", "quantite": 2}, {"materiel": "MUNITIONS DE SERVICE", "quantite": 30}, {"materiel": "ASSEMBLEUR DE STOCKAGE De service", "quantite": 1}, {"materiel": "Mallette PAMAS G1", "quantite": 1}]}, {"id": "M7-8ffm", "date": "2026-07-19", "unite": "Armes de service", "type": "Sortie", "grade": "ADJ", "nom": "DELAVAUD", "refSortie": null, "lignes": [{"materiel": "PA MASG1 - arme de service", "quantite": 1, "numeroSerie": "47183"}, {"materiel": "CHARGEURS de services", "quantite": 2}, {"materiel": "MUNITIONS DE SERVICE", "quantite": 30}, {"materiel": "ASSEMBLEUR DE STOCKAGE De service", "quantite": 1}, {"materiel": "Mallette PAMAS G1", "quantite": 1}]}, {"id": "M8-8zid", "date": "2026-07-19", "unite": "Armes de service", "type": "Sortie", "grade": "MJR", "nom": "MARCHAL", "refSortie": null, "lignes": [{"materiel": "PA MASG1 - arme de service", "quantite": 1, "numeroSerie": "47207"}, {"materiel": "CHARGEURS de services", "quantite": 2}, {"materiel": "MUNITIONS DE SERVICE", "quantite": 30}, {"materiel": "ASSEMBLEUR DE STOCKAGE De service", "quantite": 1}, {"materiel": "Mallette PAMAS G1", "quantite": 1}]}, {"id": "M9-cq3b", "date": "2026-07-19", "unite": "Peloton 1", "type": "Sortie", "grade": "MJR", "nom": "RAZA", "refSortie": null, "lignes": [{"materiel": "ÉTUIS PA MAS G1 - DROITIER", "quantite": 18}]}, {"id": "M10-djz4", "date": "2026-07-19", "unite": "Peloton 1", "type": "Sortie", "grade": "MJR", "nom": "RAZA", "refSortie": null, "lignes": [{"materiel": "ÉTUIS PA MAS G1 - GAUCHER", "quantite": 1}]}, {"id": "M13-g6ea", "date": "2026-07-19", "unite": "Peloton 3", "type": "Sortie", "grade": "MJR", "nom": "VIE", "refSortie": null, "lignes": [{"materiel": "ÉTUIS PA MAS G1 - DROITIER", "quantite": 23}]}, {"id": "M15-pkt9", "date": "2026-07-19", "unite": "BLOC 2", "type": "Sortie", "grade": "GND", "nom": "TESSA", "refSortie": null, "lignes": [{"materiel": "PA MASG1", "quantite": 10}, {"materiel": "CHARGEURS", "quantite": 10}, {"materiel": "MUNITIONS INERTES", "quantite": 50}, {"materiel": "BLUE GUN - PA MAS G1", "quantite": 10}, {"materiel": "MENOTTES Factices", "quantite": 10}, {"materiel": "DRAPEAU TRICOLORE", "quantite": 1}, {"materiel": "BAGS", "quantite": 4}, {"materiel": "BPT MOUSSE", "quantite": 9}, {"materiel": "TUBE À SABLE", "quantite": 1}, {"materiel": "lot SECOURISME", "quantite": 2}]}, {"id": "M16-qdfn", "date": "2026-07-19", "unite": "Prêt MPI", "type": "Sortie", "grade": "MJR", "nom": "BOULAY", "refSortie": null, "lignes": [{"materiel": "BLUE GUN - PA MAS G1", "quantite": 1}]}, {"id": "M17-r4o5", "date": "2026-07-19", "unite": "Prêt MPI", "type": "Sortie", "grade": "MJR", "nom": "MARCHAL", "refSortie": null, "lignes": [{"materiel": "BLUE GUN - SIG PRO", "quantite": 1}]}, {"id": "M19-ufwm", "date": "2026-07-19", "unite": "Peloton 2", "type": "Sortie", "grade": "MJR", "nom": "BROSSET", "refSortie": null, "lignes": [{"materiel": "BPT", "quantite": 22}]}, {"id": "M20-uzqz", "date": "2026-07-19", "unite": "Peloton 3", "type": "Sortie", "grade": "MJR", "nom": "VIE", "refSortie": null, "lignes": [{"materiel": "BPT", "quantite": 23}]}, {"id": "M19-1bpd", "date": "2026-07-19", "unite": "Peloton 2", "type": "Sortie", "grade": "MJR", "nom": "BROSSET", "refSortie": null, "lignes": [{"materiel": "PA MASG1", "quantite": 22}, {"materiel": "CHARGEURS", "quantite": 22}, {"materiel": "MUNITIONS INERTES", "quantite": 50}]}, {"id": "M20-48mc", "date": "2026-07-19", "unite": "Peloton 3", "type": "Sortie", "grade": "MJR", "nom": "VIE", "refSortie": null, "lignes": [{"materiel": "PA MASG1", "quantite": 23}, {"materiel": "CHARGEURS", "quantite": 23}, {"materiel": "MENOTTES Factices", "quantite": 12}, {"materiel": "COUTEAUX - BLACK", "quantite": 1}, {"materiel": "MUNITIONS INERTES", "quantite": 50}]}, {"id": "M21-e355", "date": "2026-07-19", "unite": "Peloton 3", "type": "Retour", "grade": "Mjr", "nom": "Vie", "refSortie": "M20-48mc", "lignes": [{"materiel": "PA MASG1", "quantite": 23}, {"materiel": "CHARGEURS", "quantite": 23}, {"materiel": "MENOTTES Factices", "quantite": 12}, {"materiel": "COUTEAUX - BLACK", "quantite": 1}, {"materiel": "MUNITIONS INERTES", "quantite": 50}]}, {"id": "M22-ervt", "date": "2026-07-19", "unite": "Peloton 2", "type": "Retour", "grade": "Mjr", "nom": "BROSSET", "refSortie": "M19-1bpd", "lignes": [{"materiel": "PA MASG1", "quantite": 22}, {"materiel": "CHARGEURS", "quantite": 22}, {"materiel": "MUNITIONS INERTES", "quantite": 50}]}, {"id": "M23-gjep", "date": "2026-07-19", "unite": "Peloton 3", "type": "Retour", "grade": "Mjr", "nom": "Vie", "refSortie": "M20-uzqz", "lignes": [{"materiel": "BPT", "quantite": 23}]}, {"id": "M24-iml0", "date": "2026-07-19", "unite": "Peloton 2", "type": "Retour", "grade": "MJR", "nom": "BROSSET", "refSortie": "M19-ufwm", "lignes": [{"materiel": "BPT", "quantite": 22}]}, {"id": "M25-lhmp", "date": "2026-07-20", "unite": "Peloton 2", "type": "Sortie", "grade": "MJR", "nom": "BROSSET", "refSortie": null, "lignes": [{"materiel": "PA MASG1", "quantite": 22}, {"materiel": "CHARGEURS", "quantite": 44}, {"materiel": "MUNITIONS INERTES", "quantite": 50}, {"materiel": "BPT", "quantite": 22}]}, {"id": "M26-np5i", "date": "2026-07-20", "unite": "Peloton 1", "type": "Sortie", "grade": "Mjr", "nom": "RAZA", "refSortie": null, "lignes": [{"materiel": "BPT", "quantite": 20}, {"materiel": "CHARGEURS", "quantite": 20}, {"materiel": "PA MASG1", "quantite": 20}, {"materiel": "MUNITIONS INERTES", "quantite": 50}]}, {"id": "M27-rmhu", "date": "2026-07-20", "unite": "Peloton 3", "type": "Sortie", "grade": "Mjr", "nom": "VIE", "refSortie": null, "lignes": [{"materiel": "PA MASG1", "quantite": 9}, {"materiel": "CHARGEURS", "quantite": 18}, {"materiel": "MUNITIONS INERTES", "quantite": 30}, {"materiel": "MENOTTES Factices", "quantite": 12}, {"materiel": "BPT", "quantite": 23}, {"materiel": "COUTEAUX - BLACK", "quantite": 1}, {"materiel": "BLUE GUN - PA MAS G1", "quantite": 5}, {"materiel": "RED GUN - SIG PRO", "quantite": 8}, {"materiel": "BLUE GUN - SIG PRO", "quantite": 1}]}, {"id": "M28-ubdv", "date": "2026-07-20", "unite": "BLOC 2", "type": "Sortie", "grade": "Gnd", "nom": "TESSA", "refSortie": null, "lignes": [{"materiel": "Tablette NEO", "quantite": 2}]}, {"id": "M29-uzmz", "date": "2026-07-20", "unite": "BLOC 2", "type": "Sortie", "grade": "GND", "nom": "TESSA", "refSortie": null, "lignes": [{"materiel": "BPT", "quantite": 12}, {"materiel": "ÉTUIS PA MAS G1 - DROITIER", "quantite": 3}]}, {"id": "M30-t9bs1", "date": "2026-07-20", "unite": "Peloton 3", "type": "Retour", "grade": "Mjr", "nom": "VIE", "refSortie": "M27-rmhu", "lignes": [{"materiel": "PA MASG1", "quantite": 9}, {"materiel": "CHARGEURS", "quantite": 18}, {"materiel": "MUNITIONS INERTES", "quantite": 30}, {"materiel": "MENOTTES Factices", "quantite": 12}, {"materiel": "BPT", "quantite": 23}, {"materiel": "COUTEAUX - BLACK", "quantite": 1}, {"materiel": "BLUE GUN - PA MAS G1", "quantite": 5}, {"materiel": "RED GUN - SIG PRO", "quantite": 8}, {"materiel": "BLUE GUN - SIG PRO", "quantite": 1}]}, {"id": "M31-tqee1", "date": "2026-07-20", "unite": "Peloton 1", "type": "Retour", "grade": "Mjr", "nom": "RAZA", "refSortie": "M26-np5i", "lignes": [{"materiel": "CHARGEURS", "quantite": 20}, {"materiel": "PA MASG1", "quantite": 20}, {"materiel": "MUNITIONS INERTES", "quantite": 50}]}, {"id": "M32-uhyq1", "date": "2026-07-20", "unite": "Peloton 2", "type": "Retour", "grade": "MJR", "nom": "BROSSET", "refSortie": "M25-lhmp", "lignes": [{"materiel": "PA MASG1", "quantite": 22}, {"materiel": "CHARGEURS", "quantite": 44}, {"materiel": "MUNITIONS INERTES", "quantite": 50}, {"materiel": "BPT", "quantite": 22}]}, {"id": "M31-xijf", "date": "2026-07-14", "unite": "Peloton 2", "type": "Sortie", "grade": "MJR", "nom": "BROSSET", "refSortie": null, "lignes": [{"materiel": "ÉTUIS PA MAS G1 - DROITIER", "quantite": 18}, {"materiel": "ÉTUIS PA MAS G1 - GAUCHER", "quantite": 4}]}, {"id": "M33-4yva", "date": "2026-07-20", "unite": "BLOC 2", "type": "Sortie", "grade": "GND", "nom": "TESSA", "refSortie": null, "lignes": [{"materiel": "BOULETS EXERCICES / GRENADES A PLATRE", "quantite": 10}]}, {"id": "M34-2fd71", "date": "2026-07-20", "unite": "Armes de service", "type": "Retour", "grade": "MJR", "nom": "BOULAY", "refSortie": "M3-5puh", "lignes": [{"materiel": "CHARGEURS de services", "quantite": 2}, {"materiel": "MUNITIONS DE SERVICE", "quantite": 30}, {"materiel": "ASSEMBLEUR DE STOCKAGE De service", "quantite": 1}, {"materiel": "Mallette PAMAS G1", "quantite": 1}]}, {"id": "M35-2fd72", "date": "2026-07-20", "unite": "Armes de service", "type": "Retour", "grade": "ADJ", "nom": "DELAVAUD", "refSortie": "M7-8ffm", "lignes": [{"materiel": "CHARGEURS de services", "quantite": 2}, {"materiel": "MUNITIONS DE SERVICE", "quantite": 30}, {"materiel": "ASSEMBLEUR DE STOCKAGE De service", "quantite": 1}, {"materiel": "Mallette PAMAS G1", "quantite": 1}]}, {"id": "M36-2fd73", "date": "2026-07-20", "unite": "Armes de service", "type": "Retour", "grade": "ADC", "nom": "Durand", "refSortie": "M5-6v1l", "lignes": [{"materiel": "CHARGEURS de services", "quantite": 2}, {"materiel": "MUNITIONS DE SERVICE", "quantite": 30}, {"materiel": "ASSEMBLEUR DE STOCKAGE De service", "quantite": 1}, {"materiel": "Mallette PAMAS G1", "quantite": 1}]}, {"id": "M37-2fd74", "date": "2026-07-20", "unite": "Armes de service", "type": "Retour", "grade": "CEN", "nom": "Dussert", "refSortie": "M1-4dq3", "lignes": [{"materiel": "CHARGEURS de services", "quantite": 2}, {"materiel": "MUNITIONS DE SERVICE", "quantite": 30}, {"materiel": "ASSEMBLEUR DE STOCKAGE De service", "quantite": 1}, {"materiel": "Mallette PAMAS G1", "quantite": 1}]}, {"id": "M38-2fd75", "date": "2026-07-20", "unite": "Armes de service", "type": "Retour", "grade": "MJR", "nom": "MARCHAL", "refSortie": "M8-8zid", "lignes": [{"materiel": "CHARGEURS de services", "quantite": 2}, {"materiel": "MUNITIONS DE SERVICE", "quantite": 30}, {"materiel": "ASSEMBLEUR DE STOCKAGE De service", "quantite": 1}, {"materiel": "Mallette PAMAS G1", "quantite": 1}]}, {"id": "M39-2fd76", "date": "2026-07-20", "unite": "Armes de service", "type": "Retour", "grade": "MJR", "nom": "RAZA", "refSortie": "M2-541d", "lignes": [{"materiel": "CHARGEURS de services", "quantite": 2}, {"materiel": "MUNITIONS DE SERVICE", "quantite": 30}, {"materiel": "ASSEMBLEUR DE STOCKAGE De service", "quantite": 1}, {"materiel": "Mallette PAMAS G1", "quantite": 1}]}, {"id": "M40-2fd77", "date": "2026-07-20", "unite": "Armes de service", "type": "Retour", "grade": "MJR", "nom": "ROUZIC", "refSortie": "M6-7wq6", "lignes": [{"materiel": "CHARGEURS de services", "quantite": 2}, {"materiel": "MUNITIONS DE SERVICE", "quantite": 30}, {"materiel": "ASSEMBLEUR DE STOCKAGE De service", "quantite": 1}, {"materiel": "Mallette PAMAS G1", "quantite": 1}]}, {"id": "M41-2fd88", "date": "2026-07-20", "unite": "Armes de service", "type": "Retour", "grade": "LTN", "nom": "SOLON", "refSortie": "M4-6bwh", "lignes": [{"materiel": "CHARGEURS de services", "quantite": 2}, {"materiel": "MUNITIONS DE SERVICE", "quantite": 30}, {"materiel": "ASSEMBLEUR DE STOCKAGE De service", "quantite": 1}, {"materiel": "Mallette PAMAS G1", "quantite": 1}]}, {"id": "M42-3r6b", "date": "2026-07-20", "unite": "Armes de service", "type": "Sortie", "grade": "CEN", "nom": "Dussert", "refSortie": null, "lignes": [{"materiel": "ASSEMBLEUR DE STOCKAGE De service", "quantite": 1}, {"materiel": "CHARGEURS de services", "quantite": 2}, {"materiel": "MUNITIONS DE SERVICE", "quantite": 30}, {"materiel": "Mallette PAMAS G1", "quantite": 1}]}, {"id": "M43-ncd9", "date": "2026-07-20", "unite": "Armes de service", "type": "Sortie", "grade": "Mjr", "nom": "Raza", "refSortie": null, "lignes": [{"materiel": "CHARGEURS de services", "quantite": 2}, {"materiel": "ASSEMBLEUR DE STOCKAGE De service", "quantite": 1}, {"materiel": "MUNITIONS DE SERVICE", "quantite": 30}, {"materiel": "Mallette PAMAS G1", "quantite": 1}]}, {"id": "M44-nykx", "date": "2026-07-20", "unite": "Armes de service", "type": "Sortie", "grade": "MJR", "nom": "BOULAY", "refSortie": null, "lignes": [{"materiel": "CHARGEURS de services", "quantite": 2}, {"materiel": "ASSEMBLEUR DE STOCKAGE De service", "quantite": 1}, {"materiel": "MUNITIONS DE SERVICE", "quantite": 30}, {"materiel": "Mallette PAMAS G1", "quantite": 1}]}, {"id": "M45-obcz", "date": "2026-07-20", "unite": "Armes de service", "type": "Sortie", "grade": "LTN", "nom": "SOLON", "refSortie": null, "lignes": [{"materiel": "CHARGEURS de services", "quantite": 2}, {"materiel": "ASSEMBLEUR DE STOCKAGE De service", "quantite": 1}, {"materiel": "MUNITIONS DE SERVICE", "quantite": 30}, {"materiel": "Mallette PAMAS G1", "quantite": 1}]}, {"id": "M46-orjs", "date": "2026-07-20", "unite": "Armes de service", "type": "Sortie", "grade": "ADC", "nom": "Durand", "refSortie": null, "lignes": [{"materiel": "CHARGEURS de services", "quantite": 2}, {"materiel": "ASSEMBLEUR DE STOCKAGE De service", "quantite": 1}, {"materiel": "MUNITIONS DE SERVICE", "quantite": 30}, {"materiel": "Mallette PAMAS G1", "quantite": 1}]}, {"id": "M47-p2xi", "date": "2026-07-20", "unite": "Armes de service", "type": "Sortie", "grade": "MJR", "nom": "ROUZIC", "refSortie": null, "lignes": [{"materiel": "CHARGEURS de services", "quantite": 2}, {"materiel": "ASSEMBLEUR DE STOCKAGE De service", "quantite": 1}, {"materiel": "MUNITIONS DE SERVICE", "quantite": 30}, {"materiel": "Mallette PAMAS G1", "quantite": 1}]}, {"id": "M48-pe72", "date": "2026-07-20", "unite": "Armes de service", "type": "Sortie", "grade": "ADJ", "nom": "DELAVAUD", "refSortie": null, "lignes": [{"materiel": "CHARGEURS de services", "quantite": 2}, {"materiel": "ASSEMBLEUR DE STOCKAGE De service", "quantite": 1}, {"materiel": "MUNITIONS DE SERVICE", "quantite": 30}, {"materiel": "Mallette PAMAS G1", "quantite": 1}]}, {"id": "M49-pnd7", "date": "2026-07-20", "unite": "Armes de service", "type": "Sortie", "grade": "MJR", "nom": "MARCHAL", "refSortie": null, "lignes": [{"materiel": "CHARGEURS de services", "quantite": 2}, {"materiel": "ASSEMBLEUR DE STOCKAGE De service", "quantite": 1}, {"materiel": "MUNITIONS DE SERVICE", "quantite": 30}, {"materiel": "Mallette PAMAS G1", "quantite": 1}]}, {"id": "M50-wf8e1", "date": "2026-07-20", "unite": "Peloton 1", "type": "Retour", "grade": "Mjr", "nom": "RAZA", "refSortie": "M26-np5i", "lignes": [{"materiel": "BPT", "quantite": 20}]}, {"id": "M51-rnqs", "date": "2026-07-21", "unite": "Peloton 1", "type": "Sortie", "grade": "MJR", "nom": "RAZA", "refSortie": null, "lignes": [{"materiel": "BPT", "quantite": 19}, {"materiel": "MENOTTES Factices", "quantite": 10}, {"materiel": "BPT MOUSSE", "quantite": 2}]}, {"id": "M52-ubh1", "date": "2026-07-21", "unite": "Peloton 2", "type": "Sortie", "grade": "MJR", "nom": "BROSSET", "refSortie": null, "lignes": [{"materiel": "BPT MOUSSE", "quantite": 18}, {"materiel": "BPT", "quantite": 18}, {"materiel": "MENOTTES Factices", "quantite": 18}, {"materiel": "Lacrymogène", "quantite": 3}, {"materiel": "PA MASG1", "quantite": 18}]}, {"id": "M53-wqhq", "date": "2026-07-21", "unite": "Prêt MPI", "type": "Sortie", "grade": "MJR", "nom": "VIE", "refSortie": null, "lignes": [{"materiel": "COUTEAUX - BLACK", "quantite": 6}, {"materiel": "BLUE GUN - PA MAS G1", "quantite": 5}, {"materiel": "BLUE GUN - SIG PRO", "quantite": 1}, {"materiel": "TPH 700", "quantite": 6}, {"materiel": "CLIP TPH 700", "quantite": 6}]}, {"id": "M54-fubo", "date": "2026-07-21", "unite": "Peloton 3", "type": "Sortie", "grade": "Mjr", "nom": "Vie", "refSortie": null, "lignes": [{"materiel": "BPT", "quantite": 23}, {"materiel": "PA MASG1", "quantite": 23}, {"materiel": "MUNITIONS INERTES", "quantite": 50}, {"materiel": "CHARGEURS", "quantite": 23}]}, {"id": "M55-22mh1", "date": "2026-07-21", "unite": "Peloton 1", "type": "Retour", "grade": "MJR", "nom": "RAZA", "refSortie": "M51-rnqs", "lignes": [{"materiel": "MENOTTES Factices", "quantite": 10}]}, {"id": "M56-3dng", "date": "2026-07-21", "unite": "Peloton 1", "type": "Sortie", "grade": "MJR", "nom": "RAZA", "refSortie": null, "lignes": [{"materiel": "BLUE GUN - PA MAS G1", "quantite": 4}, {"materiel": "MENOTTES Factices", "quantite": 4}]}, {"id": "M57-3yvt1", "date": "2026-07-21", "unite": "Peloton 2", "type": "Retour", "grade": "MJR", "nom": "BROSSET", "refSortie": "M52-ubh1", "lignes": [{"materiel": "BPT MOUSSE", "quantite": 18}, {"materiel": "BPT", "quantite": 18}, {"materiel": "MENOTTES Factices", "quantite": 18}, {"materiel": "Lacrymogène", "quantite": 3}, {"materiel": "PA MASG1", "quantite": 18}]}, {"id": "M58-5lnc", "date": "2026-07-21", "unite": "Peloton 2", "type": "Sortie", "grade": "MJR", "nom": "BROSSET", "refSortie": null, "lignes": [{"materiel": "BPT MOUSSE", "quantite": 6}, {"materiel": "PA MASG1", "quantite": 6}, {"materiel": "MENOTTES Factices", "quantite": 6}, {"materiel": "TPH 700", "quantite": 2}, {"materiel": "CLIP TPH 700", "quantite": 2}]}, {"id": "M59-745x1", "date": "2026-07-21", "unite": "Prêt MPI", "type": "Retour", "grade": "MJR", "nom": "VIE", "refSortie": "M53-wqhq", "lignes": [{"materiel": "COUTEAUX - BLACK", "quantite": 6}, {"materiel": "BLUE GUN - PA MAS G1", "quantite": 5}, {"materiel": "BLUE GUN - SIG PRO", "quantite": 1}, {"materiel": "TPH 700", "quantite": 6}, {"materiel": "CLIP TPH 700", "quantite": 6}]}, {"id": "M60-88pw", "date": "2026-07-21", "unite": "Prêt MPI", "type": "Sortie", "grade": "MJR", "nom": "Vie", "refSortie": null, "lignes": [{"materiel": "COUTEAUX - BLACK", "quantite": 2}]}, {"id": "M61-b1gi", "date": "2026-07-21", "unite": "Peloton 3", "type": "Sortie", "grade": "MJR", "nom": "VIE", "refSortie": null, "lignes": [{"materiel": "MENOTTES Factices", "quantite": 10}, {"materiel": "COUTEAUX - BLACK", "quantite": 1}, {"materiel": "TPH 700", "quantite": 2}]}, {"id": "M61-lsu11", "date": "2026-07-21", "unite": "Peloton 2", "type": "Retour", "grade": "MJR", "nom": "BROSSET", "refSortie": "M58-5lnc", "lignes": [{"materiel": "BPT MOUSSE", "quantite": 6}, {"materiel": "PA MASG1", "quantite": 6}, {"materiel": "MENOTTES Factices", "quantite": 6}, {"materiel": "TPH 700", "quantite": 2}, {"materiel": "CLIP TPH 700", "quantite": 2}]}, {"id": "M62-mg1j1", "date": "2026-07-21", "unite": "Peloton 3", "type": "Retour", "grade": "Mjr", "nom": "Vie", "refSortie": "M54-fubo", "lignes": [{"materiel": "BPT", "quantite": 23}, {"materiel": "PA MASG1", "quantite": 23}, {"materiel": "MUNITIONS INERTES", "quantite": 50}, {"materiel": "CHARGEURS", "quantite": 23}]}, {"id": "M63-mg1j2", "date": "2026-07-21", "unite": "Peloton 3", "type": "Retour", "grade": "MJR", "nom": "VIE", "refSortie": "M61-b1gi", "lignes": [{"materiel": "MENOTTES Factices", "quantite": 10}, {"materiel": "COUTEAUX - BLACK", "quantite": 1}, {"materiel": "TPH 700", "quantite": 2}]}, {"id": "M64-tat51", "date": "2026-07-21", "unite": "Peloton 1", "type": "Retour", "grade": "MJR", "nom": "RAZA", "refSortie": "M51-rnqs", "lignes": [{"materiel": "BPT", "quantite": 19}, {"materiel": "BPT MOUSSE", "quantite": 2}]}, {"id": "M65-tat52", "date": "2026-07-21", "unite": "Peloton 1", "type": "Retour", "grade": "MJR", "nom": "RAZA", "refSortie": "M56-3dng", "lignes": [{"materiel": "BLUE GUN - PA MAS G1", "quantite": 4}, {"materiel": "MENOTTES Factices", "quantite": 4}]}, {"id": "M66-1ocz1", "date": "2026-07-21", "unite": "Prêt MPI", "type": "Retour", "grade": "MJR", "nom": "Vie", "refSortie": "M60-88pw", "lignes": [{"materiel": "COUTEAUX - BLACK", "quantite": 2}]}, {"id": "M67-2i9o", "date": "2026-07-21", "unite": "Prêt MPI", "type": "Sortie", "grade": "Mjr", "nom": "PERROT", "refSortie": null, "lignes": [{"materiel": "COUTEAUX - BLACK", "quantite": 1}]}, {"id": "M68-2bbn", "date": "2026-07-22", "unite": "Peloton 3", "type": "Sortie", "grade": "MJR", "nom": "VIE", "refSortie": null, "lignes": [{"materiel": "PA MASG1", "quantite": 23}, {"materiel": "CHARGEURS", "quantite": 23}, {"materiel": "MENOTTES Factices", "quantite": 12}, {"materiel": "MUNITIONS INERTES", "quantite": 50}, {"materiel": "BPT", "quantite": 23}]}, {"id": "M69-3jf3", "date": "2026-07-22", "unite": "Peloton 2", "type": "Sortie", "grade": "MJR", "nom": "BROSSET", "refSortie": null, "lignes": [{"materiel": "PA MASG1", "quantite": 22}, {"materiel": "BPT", "quantite": 22}, {"materiel": "BPT MOUSSE", "quantite": 11}, {"materiel": "MENOTTES Factices", "quantite": 11}]}, {"id": "M70-eont", "date": "2026-07-22", "unite": "Peloton 3", "type": "Sortie", "grade": "Mjr", "nom": "VIE", "refSortie": null, "lignes": [{"materiel": "Lacrymogène", "quantite": 2}, {"materiel": "STOP STICK (lot de 2)", "quantite": 3}]}, {"id": "M71-l6011", "date": "2026-07-22", "unite": "Peloton 2", "type": "Retour", "grade": "MJR", "nom": "BROSSET", "refSortie": "M69-3jf3", "lignes": [{"materiel": "PA MASG1", "quantite": 22}, {"materiel": "BPT", "quantite": 22}, {"materiel": "BPT MOUSSE", "quantite": 11}, {"materiel": "MENOTTES Factices", "quantite": 11}]}, {"id": "M72-8plr1", "date": "2026-07-22", "unite": "Peloton 3", "type": "Retour", "grade": "MJR", "nom": "VIE", "refSortie": "M68-2bbn", "lignes": [{"materiel": "PA MASG1", "quantite": 23}, {"materiel": "CHARGEURS", "quantite": 23}, {"materiel": "MENOTTES Factices", "quantite": 12}, {"materiel": "MUNITIONS INERTES", "quantite": 50}, {"materiel": "BPT", "quantite": 23}]}, {"id": "M73-8plr2", "date": "2026-07-22", "unite": "Peloton 3", "type": "Retour", "grade": "Mjr", "nom": "VIE", "refSortie": "M70-eont", "lignes": [{"materiel": "Lacrymogène", "quantite": 2}, {"materiel": "STOP STICK (lot de 2)", "quantite": 3}]}, {"id": "M74-33qe", "date": "2026-07-22", "unite": "Peloton 3", "type": "Sortie", "grade": "MJR", "nom": "VIE", "refSortie": null, "lignes": [{"materiel": "PA MASG1", "quantite": 23}, {"materiel": "BPT MOUSSE", "quantite": 6}, {"materiel": "BPT", "quantite": 23}, {"materiel": "CHARGEURS", "quantite": 23}, {"materiel": "MUNITIONS INERTES", "quantite": 50}, {"materiel": "MENOTTES Factices", "quantite": 12}, {"materiel": "COUTEAUX - BLACK", "quantite": 2}, {"materiel": "TPH 700", "quantite": 2}]}, {"id": "M75-61yc", "date": "2026-07-23", "unite": "Peloton 2", "type": "Sortie", "grade": "MJR", "nom": "BROSSET", "refSortie": null, "lignes": [{"materiel": "PA MASG1", "quantite": 22}, {"materiel": "MENOTTES Factices", "quantite": 11}, {"materiel": "COUTEAUX - BLACK", "quantite": 4}, {"materiel": "BPT MOUSSE", "quantite": 4}]}, {"id": "M76-82d01", "date": "2026-07-22", "unite": "Prêt MPI", "type": "Retour", "grade": "Mjr", "nom": "PERROT", "refSortie": "M67-2i9o", "lignes": [{"materiel": "COUTEAUX - BLACK", "quantite": 1}]}, {"id": "M77-a8zj", "date": "2026-07-23", "unite": "BLOC 2", "type": "Sortie", "grade": "GND", "nom": "TESSA", "refSortie": null, "lignes": [{"materiel": "PIE", "quantite": 7}]}, {"id": "M78-cmm7", "date": "2026-07-23", "unite": "BLOC 2", "type": "Sortie", "grade": "GND", "nom": "TESSA", "refSortie": null, "lignes": [{"materiel": "CARTOUCHE PIE", "quantite": 70}]}, {"id": "M79-2cu3", "date": "2026-07-23", "unite": "BLOC 2", "type": "Sortie", "grade": "GND", "nom": "TESSA", "refSortie": null, "lignes": [{"materiel": "COUTEAUX - BLACK", "quantite": 4}, {"materiel": "STOP STICK (lot de 2)", "quantite": 3}]}, {"id": "M80-3ajm1", "date": "2026-07-23", "unite": "Peloton 2", "type": "Retour", "grade": "MJR", "nom": "BROSSET", "refSortie": "M75-61yc", "lignes": [{"materiel": "PA MASG1", "quantite": 22}, {"materiel": "MENOTTES Factices", "quantite": 11}, {"materiel": "COUTEAUX - BLACK", "quantite": 4}, {"materiel": "BPT MOUSSE", "quantite": 4}]}, {"id": "M81-eeyu", "date": "2026-07-23", "unite": "Peloton 1", "type": "Sortie", "grade": "Mjr", "nom": "RAZA", "refSortie": null, "lignes": [{"materiel": "BPT", "quantite": 19}]}, {"id": "M82-fuao", "date": "2026-07-23", "unite": "Peloton 1", "type": "Sortie", "grade": "MJR", "nom": "RAZA", "refSortie": null, "lignes": [{"materiel": "RED GUN - SIG PRO", "quantite": 19}, {"materiel": "MENOTTES Factices", "quantite": 10}]}, {"id": "M83-hayw", "date": "2026-07-23", "unite": "Peloton 3", "type": "Sortie", "grade": "MJR", "nom": "VIE", "refSortie": null, "lignes": [{"materiel": "CLIP TPH 700", "quantite": 2}]}, {"id": "M84-iey6", "date": "2026-07-23", "unite": "Peloton 2", "type": "Sortie", "grade": "MJR", "nom": "BROSSET", "refSortie": null, "lignes": [{"materiel": "MENOTTES Factices", "quantite": 7}, {"materiel": "BPT MOUSSE", "quantite": 7}, {"materiel": "RED GUN - SIG PRO", "quantite": 7}]}, {"id": "M85-oq401", "date": "2026-07-23", "unite": "Peloton 1", "type": "Retour", "grade": "Mjr", "nom": "RAZA", "refSortie": "M81-eeyu", "lignes": [{"materiel": "BPT", "quantite": 19}]}, {"id": "M86-oq402", "date": "2026-07-23", "unite": "Peloton 1", "type": "Retour", "grade": "MJR", "nom": "RAZA", "refSortie": "M82-fuao", "lignes": [{"materiel": "RED GUN - SIG PRO", "quantite": 19}, {"materiel": "MENOTTES Factices", "quantite": 10}]}, {"id": "M87-owt41", "date": "2026-07-23", "unite": "Peloton 2", "type": "Retour", "grade": "MJR", "nom": "BROSSET", "refSortie": "M84-iey6", "lignes": [{"materiel": "MENOTTES Factices", "quantite": 7}, {"materiel": "BPT MOUSSE", "quantite": 7}, {"materiel": "RED GUN - SIG PRO", "quantite": 7}]}, {"id": "M88-p9nm1", "date": "2026-07-23", "unite": "Peloton 3", "type": "Retour", "grade": "MJR", "nom": "VIE", "refSortie": "M74-33qe", "lignes": [{"materiel": "PA MASG1", "quantite": 23}, {"materiel": "BPT MOUSSE", "quantite": 6}, {"materiel": "BPT", "quantite": 23}, {"materiel": "CHARGEURS", "quantite": 23}, {"materiel": "MUNITIONS INERTES", "quantite": 50}, {"materiel": "MENOTTES Factices", "quantite": 12}, {"materiel": "COUTEAUX - BLACK", "quantite": 2}, {"materiel": "TPH 700", "quantite": 2}]}, {"id": "M89-p9nm2", "date": "2026-07-23", "unite": "Peloton 3", "type": "Retour", "grade": "MJR", "nom": "VIE", "refSortie": "M83-hayw", "lignes": [{"materiel": "CLIP TPH 700", "quantite": 2}]}, {"id": "M90-1qz2", "date": "2026-07-24", "unite": "Peloton 2", "type": "Sortie", "grade": "Mjr", "nom": "BROSSET", "refSortie": null, "lignes": [{"materiel": "PA MASG1", "quantite": 22}, {"materiel": "MENOTTES Factices", "quantite": 11}, {"materiel": "COUTEAUX - BLACK", "quantite": 6}, {"materiel": "BPT MOUSSE", "quantite": 6}]}, {"id": "M91-37yj", "date": "2026-07-24", "unite": "Peloton 3", "type": "Sortie", "grade": "MJR", "nom": "Vie", "refSortie": null, "lignes": [{"materiel": "PA MASG1", "quantite": 23}, {"materiel": "MENOTTES Factices", "quantite": 12}, {"materiel": "BPT", "quantite": 23}, {"materiel": "BPT MOUSSE", "quantite": 4}, {"materiel": "CHARGEURS", "quantite": 46}]}, {"id": "M92-5cnu", "date": "2026-07-24", "unite": "BLOC 2", "type": "Sortie", "grade": "GND", "nom": "TESSA", "refSortie": null, "lignes": [{"materiel": "BOULETS EXERCICES / GRENADES A PLATRE", "quantite": 18}]}];
 
 let materiels = charger('am_materiels', SEED_MATERIELS);
 let mouvements = charger('am_mouvements', SEED_MOUVEMENTS);
@@ -410,6 +442,29 @@ let kits = charger('am_kits', [
 ]);
 let historique = charger('am_historique', []);
 
+function appliquerTheme(){
+  let pref = 'auto';
+  try{ pref = localStorage.getItem('am_theme') || 'auto'; }catch(e){}
+  let sombre = pref === 'sombre';
+  if(pref === 'auto'){
+    sombre = !!(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  }
+  document.documentElement.setAttribute('data-theme', sombre ? 'dark' : 'light');
+  const sel = document.getElementById('reg-theme');
+  if(sel) sel.value = pref;
+}
+function changerTheme(valeur){
+  try{ localStorage.setItem('am_theme', valeur); }catch(e){}
+  appliquerTheme();
+}
+let toastTimer = null;
+function toast(message){
+  const el = document.getElementById('toast');
+  el.textContent = message;
+  el.classList.add('visible');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=> el.classList.remove('visible'), 2400);
+}
 function charger(cle, defaut){
   try{
     const v = localStorage.getItem(cle);
@@ -422,7 +477,7 @@ function sauvegarder(cle, valeur){
   try{ localStorage.setItem(cle, JSON.stringify(valeur)); }
   catch(e){ console.warn('Stockage local indisponible — les données ne persisteront pas.', e); }
 }
-function sauverTout(){ sauvegarder('am_materiels', materiels); sauvegarder('am_mouvements', mouvements); sauvegarder('am_kits', kits); sauvegarder('am_historique', historique); }
+function sauverTout(){ sauvegarder('am_materiels', materiels); sauvegarder('am_mouvements', mouvements); sauvegarder('am_kits', kits); sauvegarder('am_historique', historique); sauvegarder('am_unites', unites); }
 
 function nomsMateriels(){
   const set = new Set();
@@ -498,6 +553,7 @@ function allerA(page){
   if(navBtn) navBtn.classList.add('actif');
   if(page==='accueil') rafraichirAccueil();
   if(page==='materiel') rafraichirMateriel();
+  if(page==='reglages') rafraichirUnites();
   if(page==='reintegration') rafraichirReintegration();
   if(page==='resume') initResume();
   if(page==='inventaire') rafraichirInventaire();
@@ -510,17 +566,20 @@ function rafraichirAccueil(){
   rechercheAccueil();
 }
 function afficherDerniereSauvegarde(){
-  const p = document.getElementById('a-derniere-sauvegarde');
+  const zone = document.getElementById('a-derniere-sauvegarde');
   let iso = null;
   try{ iso = localStorage.getItem('am_derniere_sauvegarde'); }catch(e){}
   if(!iso){
-    p.innerHTML = `<span style="color:var(--rouge);">Aucune sauvegarde (.json) effectuée pour l'instant</span>`;
+    zone.innerHTML = `<div class="banniere-alerte">⚠️ Aucune sauvegarde (.json) effectuée pour l'instant — pense à en faire une régulièrement.</div>`;
     return;
   }
   const jours = Math.floor((new Date() - new Date(iso)) / 86400000);
   const texte = jours<=0 ? "aujourd'hui" : jours===1 ? 'il y a 1 jour' : `il y a ${jours} jours`;
-  const couleur = jours>=7 ? 'var(--rouge)' : jours>=3 ? '#8A5A00' : 'var(--texte-att)';
-  p.innerHTML = `Dernière sauvegarde (.json) : <span style="color:${couleur};font-weight:600;">${texte}</span>`;
+  if(jours>=3){
+    zone.innerHTML = `<div class="banniere-alerte">⚠️ Dernière sauvegarde ${texte} — pense à en refaire une.</div>`;
+  }else{
+    zone.innerHTML = `<p class="note" style="margin:2px 0 0;">Dernière sauvegarde (.json) : <span style="color:var(--texte-att);font-weight:600;">${texte}</span></p>`;
+  }
 }
 function rechercheAccueil(){
   const q = (document.getElementById('a-recherche').value||'').trim().toLowerCase();
@@ -648,7 +707,7 @@ function validerReintegration(){
   sauverTout();
   rafraichirAccueil();
   rafraichirDashboard();
-  alert(coches.length + ' ligne(s) réintégrée(s).');
+  toast(coches.length + ' ligne(s) réintégrée(s).');
   allerA('accueil');
 }
 /* ====================== RESUME ====================== */
@@ -769,11 +828,11 @@ function copierResume(){
   zone.setSelectionRange(0, 999999);
   try{
     navigator.clipboard.writeText(zone.value).then(
-      ()=>alert('Texte copié — colle-le dans SMS, WhatsApp ou Mail.'),
-      ()=>document.execCommand('copy') && alert('Texte copié.')
+      ()=>toast('Texte copié — colle-le dans SMS, WhatsApp ou Mail.'),
+      ()=>document.execCommand('copy') && toast('Texte copié.')
     );
   }catch(e){
-    try{ document.execCommand('copy'); alert('Texte copié.'); }
+    try{ document.execCommand('copy'); toast('Texte copié.'); }
     catch(e2){ alert('Copie impossible automatiquement — sélectionne le texte manuellement.'); }
   }
 }
@@ -812,7 +871,7 @@ function toutRendre(nom){
   sauverTout();
   rafraichirAccueil();
   rafraichirDashboard();
-  alert(mouvementsCrees + ' retour(s) enregistré(s) pour ' + nom + '.');
+  toast(mouvementsCrees + ' retour(s) enregistré(s) pour ' + nom + '.');
 }
 function allerVersMateriel(index){
   allerA('materiel');
@@ -835,7 +894,7 @@ function allerVersRegistreEdit(mouvementId, ligneIndex){
 
 /* ====================== SAISIE RAPIDE ====================== */
 function remplirSelectUnites(sel){
-  sel.innerHTML = UNITES.map(u=>`<option value="${u}">${u}</option>`).join('');
+  sel.innerHTML = unites.map(u=>`<option value="${u}">${u}</option>`).join('');
 }
 function initSaisie(){
   document.getElementById('s-date').value = new Date().toISOString().slice(0,10);
@@ -899,7 +958,7 @@ function sauverKitDepuisLignes(){
   kits.push({nom:nom.trim(), lignes});
   sauverTout();
   remplirSelectKits();
-  alert('Kit "'+nom.trim()+'" créé.');
+  toast('Kit "'+nom.trim()+'" créé.');
 }
 function supprimerKit(){
   const idx = document.getElementById('s-kit').value;
@@ -1020,7 +1079,7 @@ function enregistrerMouvement(){
   document.getElementById('s-ref-wrap').style.display='none';
   document.getElementById('s-type').value='Sortie';
   ajouterLigneSaisie();
-  alert(lignes.length + ' ligne(s) enregistrée(s) dans le Registre.');
+  toast(lignes.length + ' ligne(s) enregistrée(s) dans le Registre.');
 }
 function annulerSaisie(){
   const grade = document.getElementById('s-grade').value.trim();
@@ -1079,6 +1138,52 @@ function modifierNomMateriel(i, input){
   materiels[i].materiel = val;
   sauverTout();
 }
+/* ----- Gestion des unités ----- */
+function rafraichirUnites(){
+  const liste = document.getElementById('unites-liste');
+  liste.innerHTML = unites.map((u,i)=>`
+    <div class="mat-card">
+      <div class="l1">
+        <input type="text" value="${u}" onchange="modifierUnite(${i},this)">
+        <button class="x-btn" onclick="supprimerUnite(${i})">✕</button>
+      </div>
+    </div>
+  `).join('');
+}
+function rafraichirToutesLesListesUnite(){
+  const selS = document.getElementById('s-unite');
+  if(selS){ const v = selS.value; selS.innerHTML = unites.map(u=>`<option value="${u}">${u}</option>`).join(''); selS.value = v; }
+  const selR = document.getElementById('r-filtre-unite');
+  if(selR){ const v = selR.value; selR.innerHTML = '<option value="">Toutes unités</option>'+unites.map(u=>`<option value="${u}">${u}</option>`).join(''); selR.value = v; }
+}
+function ajouterUnite(){
+  const nom = prompt('Nom de la nouvelle unité (ex: "Tir CQB") :');
+  if(!nom || !nom.trim()) return;
+  if(unites.includes(nom.trim())){ alert('Cette unité existe déjà.'); return; }
+  unites.push(nom.trim());
+  sauverTout();
+  rafraichirUnites();
+  rafraichirToutesLesListesUnite();
+}
+function modifierUnite(i, input){
+  const val = input.value.trim();
+  if(val===''){
+    alert('Le nom de l\'unité ne peut pas être vide.');
+    input.value = unites[i];
+    return;
+  }
+  unites[i] = val;
+  sauverTout();
+  rafraichirToutesLesListesUnite();
+}
+function supprimerUnite(i){
+  if(confirm('Supprimer l\'unité "'+unites[i]+'" ? (les mouvements déjà enregistrés avec cette unité ne sont pas modifiés)')){
+    unites.splice(i,1);
+    sauverTout();
+    rafraichirUnites();
+    rafraichirToutesLesListesUnite();
+  }
+}
 function ajouterLigneMateriel(){
   materiels.push({categorie:'matériels RGPL', materiel:'Nouveau matériel', quantite:0, hs:0});
   const nouvelIndex = materiels.length - 1;
@@ -1095,7 +1200,12 @@ function ajouterLigneMateriel(){
   }
 }
 function supprimerMateriel(i){
-  if(confirm('Supprimer cette ligne ?')){ materiels.splice(i,1); sauverTout(); rafraichirMateriel(); }
+  const nom = materiels[i].materiel;
+  const enCours = (enCoursParMateriel()[nom]) || 0;
+  const message = enCours > 0
+    ? `Attention : "${nom}" est encore en cours chez au moins une personne (${enCours} au total non restitué). Supprimer cette ligne de stock quand même ?`
+    : 'Supprimer cette ligne ?';
+  if(confirm(message)){ materiels.splice(i,1); sauverTout(); rafraichirMateriel(); }
 }
 
 /* ====================== REGISTRE ====================== */
@@ -1118,7 +1228,7 @@ function toutesLesLignes(){
 }
 function rafraichirRegistre(){
   const selU = document.getElementById('r-filtre-unite');
-  if(selU.options.length<=1) selU.innerHTML='<option value="">Toutes unités</option>'+UNITES.map(u=>`<option value="${u}">${u}</option>`).join('');
+  if(selU.options.length<=1) selU.innerHTML='<option value="">Toutes unités</option>'+unites.map(u=>`<option value="${u}">${u}</option>`).join('');
 
   const fu = document.getElementById('r-filtre-unite').value;
   const ft = document.getElementById('r-filtre-type').value;
@@ -1262,7 +1372,7 @@ function supprimerLigneRegistre(){
   rafraichirRegistre();
   rafraichirAccueil();
   rafraichirDashboard();
-  alert('Ligne supprimée.');
+  toast('Ligne supprimée.');
 }
 
 /* ====================== TABLEAU DE BORD ====================== */
@@ -1370,8 +1480,37 @@ function rafraichirDashboard(){
 }
 
 /* ====================== OUTILS ====================== */
+function importerJSON(fichier){
+  if(!fichier) return;
+  if(!confirm('Importer cette sauvegarde va REMPLACER toutes les données actuelles (matériel, registre, kits, historique). Continuer ?')){
+    document.getElementById('reg-fichier-import').value = '';
+    return;
+  }
+  const lecteur = new FileReader();
+  lecteur.onload = (e)=>{
+    try{
+      const data = JSON.parse(e.target.result);
+      if(!Array.isArray(data.materiels) || !Array.isArray(data.mouvements)){
+        alert('Ce fichier ne ressemble pas à une sauvegarde valide (matériels/mouvements manquants).');
+        return;
+      }
+      materiels = data.materiels;
+      mouvements = data.mouvements;
+      if(Array.isArray(data.kits)) kits = data.kits;
+      if(Array.isArray(data.historique)) historique = data.historique;
+      if(Array.isArray(data.unites)) unites = data.unites;
+      sauverTout();
+      toast('Sauvegarde importée : ' + materiels.length + ' matériels, ' + mouvements.length + ' mouvements.');
+      allerA('accueil');
+    }catch(err){
+      alert('Impossible de lire ce fichier — vérifie que c\'est bien un export .json de l\'appli.');
+    }
+    document.getElementById('reg-fichier-import').value = '';
+  };
+  lecteur.readAsText(fichier);
+}
 function exporterJSON(){
-  const data = {materiels, mouvements, exporte:new Date().toISOString()};
+  const data = {materiels, mouvements, kits, historique, unites, exporte:new Date().toISOString()};
   const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
@@ -1592,6 +1731,7 @@ function reinitialiser(){
 }
 
 /* ====================== DEMARRAGE ====================== */
+appliquerTheme();
 initSaisie();
 rafraichirAccueil();
 document.getElementById('r-filtre-unite').addEventListener('change', rafraichirRegistre);
